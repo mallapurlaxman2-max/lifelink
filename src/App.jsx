@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { supabase } from "./supabase.js";
 import "./App.css";
 
 // Known local areas with reference coordinates
@@ -280,6 +281,72 @@ function App() {
     }
   }, [userLocation]);
 
+  // LIVE CLOUD SYNC: Fetch public items & real-time updates from Supabase
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCloudData() {
+      try {
+        const { data: cloudItems, error: itemsError } = await supabase
+          .from("items")
+          .select("*")
+          .order("id", { ascending: false });
+
+        if (!itemsError && cloudItems && cloudItems.length > 0 && isMounted) {
+          setItems((localItems) => {
+            // Merge cloud items with starter items uniquely
+            const ids = new Set(cloudItems.map((i) => i.id));
+            const merged = [...cloudItems, ...localItems.filter((i) => !ids.has(i.id))];
+            return merged;
+          });
+        }
+      } catch (err) {
+        console.warn("Could not load cloud items, using local:", err);
+      }
+
+      try {
+        const { data: cloudDonors, error: donorsError } = await supabase
+          .from("donors")
+          .select("*")
+          .order("id", { ascending: false });
+
+        if (!donorsError && cloudDonors && cloudDonors.length > 0 && isMounted) {
+          setDonors((localDonors) => {
+            const ids = new Set(cloudDonors.map((d) => d.id));
+            return [...cloudDonors, ...localDonors.filter((d) => !ids.has(d.id))];
+          });
+        }
+      } catch (err) {
+        console.warn("Could not load cloud donors, using local:", err);
+      }
+    }
+
+    loadCloudData();
+
+    // Listen for live items added by other users in real time
+    const channel = supabase
+      .channel("public-lifelink-items")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "items" },
+        (payload) => {
+          if (isMounted && payload.new) {
+            setItems((curr) => {
+              if (curr.some((item) => item.id === payload.new.id)) return curr;
+              return [payload.new, ...curr];
+            });
+            showMessage(`✨ New item shared nearby: "${payload.new.name}" in ${payload.new.area}!`);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   // Handle ESC key and scroll lock
   useEffect(() => {
     const isAnyModalOpen =
@@ -539,7 +606,24 @@ function App() {
         "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=85",
     };
 
+    // Save locally
     setItems((current) => [item, ...current]);
+
+    // Push to Supabase Cloud Database (so friends & other phones see it!)
+    try {
+      supabase
+        .from("items")
+        .insert([item])
+        .then(({ error }) => {
+          if (error) {
+            console.warn("Cloud sync note:", error.message);
+          } else {
+            console.log("Item successfully synced to Supabase cloud!");
+          }
+        });
+    } catch (e) {
+      console.warn("Cloud push error:", e);
+    }
     setShowAddModal(false);
     setNewItem({
       name: "",
@@ -623,6 +707,18 @@ function App() {
     };
 
     setDonors((prev) => [donor, ...prev]);
+
+    // Push to Supabase Cloud Database
+    try {
+      supabase
+        .from("donors")
+        .insert([donor])
+        .then(({ error }) => {
+          if (error) console.warn("Cloud donor sync note:", error.message);
+        });
+    } catch (e) {
+      console.warn("Cloud donor push error:", e);
+    }
     setShowDonorModal(false);
     setBloodGroup(donor.group);
     setNewDonor({ name: "", group: "O+", area: "", phone: "", email: "" });
