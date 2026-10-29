@@ -1891,6 +1891,121 @@ main,
   background: #e2ecff;
 }
 
+/* Contact Details Card in Add Item Modal */
+.contact-inputs-card {
+  padding: 16px;
+  border: 1px solid #d9e4f5;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f7faff 0%, #edf4ff 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-card-title span {
+  font-size: 20px;
+}
+
+.contact-card-title strong {
+  display: block;
+  font-size: 13px;
+  color: #2b3a4f;
+}
+
+.contact-card-title small {
+  display: block;
+  font-size: 11px;
+  color: #6a798d;
+}
+
+/* Request modal buttons and flow */
+.request-flow-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.flow-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f0f4fc;
+  color: #3b4e6b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dual-action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.button-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  color: white;
+  background: #25d366;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.button-whatsapp:hover {
+  background: #20bd5a;
+  transform: translateY(-2px);
+}
+
+.button-email {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  color: white;
+  background: #4266dc;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(66, 102, 220, 0.25);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.button-email:hover {
+  background: #3152be;
+  transform: translateY(-2px);
+}
+
+.donor-contact-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.donor-contact-options .button {
+  width: 100%;
+}
+
 .field-hint {
   color: #8b97a7;
   font-size: 12px;

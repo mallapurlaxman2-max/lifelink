@@ -29,6 +29,8 @@ const STARTER_ITEMS = [
     type: "Borrow",
     description: "Casio fx-991EX scientific calculator for college maths, exams and engineering assignments. Fully functional.",
     owner: "Rahul",
+    phone: "+919876543210",
+    email: "rahul.mysuru@gmail.com",
     price: "Free to borrow",
     area: "Saraswathipuram, Mysuru",
     image:
@@ -43,6 +45,8 @@ const STARTER_ITEMS = [
     type: "Borrow",
     description: "A comfortable hybrid bicycle with basket for short errands, market visits and college commute.",
     owner: "Arjun",
+    phone: "+919845012345",
+    email: "arjun.gokulam@gmail.com",
     price: "Free to borrow",
     area: "Gokulam, Mysuru",
     image:
@@ -57,6 +61,8 @@ const STARTER_ITEMS = [
     type: "Donate",
     description: "Useful textbooks and reference guides for Python, Data Structures, and Web Development. Free to keep.",
     owner: "Ananya",
+    phone: "+919900112233",
+    email: "ananya.study@gmail.com",
     price: "Free to keep",
     area: "Kuvempunagar, Mysuru",
     image:
@@ -71,6 +77,8 @@ const STARTER_ITEMS = [
     type: "Borrow",
     description: "Handy 18V cordless drill with full bit set and extra battery. Perfect for assembling furniture and small repairs.",
     owner: "Kiran",
+    phone: "+919731234567",
+    email: "kiran.diy@gmail.com",
     price: "Free to borrow",
     area: "Jayalakshmipuram, Mysuru",
     image:
@@ -85,6 +93,8 @@ const STARTER_ITEMS = [
     type: "Donate",
     description: "Adjustable 3-tone LED lamp with USB power cable. Clean condition, giving away to students.",
     owner: "Meera",
+    phone: "+919886554433",
+    email: "meera.home@gmail.com",
     price: "Free to keep",
     area: "JP Nagar, Mysuru",
     image:
@@ -99,6 +109,8 @@ const STARTER_ITEMS = [
     type: "Borrow",
     description: "Spacious water-resistant backpack for college trips, weekend camping, or carrying sports equipment.",
     owner: "Vikram",
+    phone: "+919448123456",
+    email: "vikram.trips@gmail.com",
     price: "Free to borrow",
     area: "Vijayanagar, Mysuru",
     image:
@@ -111,14 +123,14 @@ const STARTER_ITEMS = [
 const BLOOD_GROUPS = ["All groups", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const STARTER_DONORS = [
-  { id: 1, name: "Aarav Sharma", group: "O+", area: "Mysuru Central", available: true, contact: "+91 98*** ***10", lastDonated: "2 months ago" },
-  { id: 2, name: "Diya Rao", group: "B+", area: "Saraswathipuram, Mysuru", available: true, contact: "+91 94*** ***22", lastDonated: "4 months ago" },
-  { id: 3, name: "Ishaan Nair", group: "A+", area: "Gokulam, Mysuru", available: false, contact: "+91 91*** ***35", lastDonated: "1 week ago" },
-  { id: 4, name: "Sara Khan", group: "O-", area: "Kuvempunagar, Mysuru", available: true, contact: "+91 99*** ***41", lastDonated: "3 months ago" },
-  { id: 5, name: "Karthik Verma", group: "AB+", area: "Jayalakshmipuram, Mysuru", available: true, contact: "+91 97*** ***55", lastDonated: "5 months ago" },
-  { id: 6, name: "Pooja Hegde", group: "A-", area: "Vijayanagar, Mysuru", available: true, contact: "+91 96*** ***68", lastDonated: "3 months ago" },
-  { id: 7, name: "Naveen Gowda", group: "B-", area: "Hebbal, Mysuru", available: false, contact: "+91 95*** ***77", lastDonated: "2 weeks ago" },
-  { id: 8, name: "Tanvi Kulkarni", group: "AB-", area: "JP Nagar, Mysuru", available: true, contact: "+91 93*** ***89", lastDonated: "6 months ago" },
+  { id: 1, name: "Aarav Sharma", group: "O+", area: "Mysuru Central", available: true, phone: "+919876543210", email: "aarav.donor@gmail.com", lastDonated: "2 months ago" },
+  { id: 2, name: "Diya Rao", group: "B+", area: "Saraswathipuram, Mysuru", available: true, phone: "+919448012345", email: "diya.donor@gmail.com", lastDonated: "4 months ago" },
+  { id: 3, name: "Ishaan Nair", group: "A+", area: "Gokulam, Mysuru", available: false, phone: "+919108123456", email: "ishaan.donor@gmail.com", lastDonated: "1 week ago" },
+  { id: 4, name: "Sara Khan", group: "O-", area: "Kuvempunagar, Mysuru", available: true, phone: "+919900987654", email: "sara.donor@gmail.com", lastDonated: "3 months ago" },
+  { id: 5, name: "Karthik Verma", group: "AB+", area: "Jayalakshmipuram, Mysuru", available: true, phone: "+919741234567", email: "karthik.donor@gmail.com", lastDonated: "5 months ago" },
+  { id: 6, name: "Pooja Hegde", group: "A-", area: "Vijayanagar, Mysuru", available: true, phone: "+919632123456", email: "pooja.donor@gmail.com", lastDonated: "3 months ago" },
+  { id: 7, name: "Naveen Gowda", group: "B-", area: "Hebbal, Mysuru", available: false, phone: "+919535123456", email: "naveen.donor@gmail.com", lastDonated: "2 weeks ago" },
+  { id: 8, name: "Tanvi Kulkarni", group: "AB-", area: "JP Nagar, Mysuru", available: true, phone: "+919341123456", email: "tanvi.donor@gmail.com", lastDonated: "6 months ago" },
 ];
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=85";
@@ -145,6 +157,11 @@ function distanceLabel(distance) {
   return `${distance.toFixed(1)} km away`;
 }
 
+function cleanPhoneNumber(phone) {
+  if (!phone) return "";
+  return phone.replace(/[^0-9]/g, "");
+}
+
 function App() {
   // Persistence with localStorage
   const [items, setItems] = useState(() => {
@@ -152,10 +169,11 @@ function App() {
       const saved = localStorage.getItem("lifelink_items");
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Ensure items always have their neighborhood area
         return parsed.map((item, idx) => ({
           ...item,
           area: item.area || STARTER_ITEMS[idx]?.area || "Saraswathipuram, Mysuru",
+          phone: item.phone || STARTER_ITEMS[idx]?.phone || "+919876543210",
+          email: item.email || STARTER_ITEMS[idx]?.email || "owner@lifelink.local",
           lat: item.lat ?? STARTER_ITEMS[idx]?.lat ?? 12.302,
           lng: item.lng ?? STARTER_ITEMS[idx]?.lng ?? 76.635,
         }));
@@ -186,7 +204,7 @@ function App() {
   });
 
   const [locationLoading, setLocationLoading] = useState(false);
-  const [maxDistance, setMaxDistance] = useState("all"); // 'all', '5', '10', '25'
+  const [maxDistance, setMaxDistance] = useState("all");
   const [sortByNearest, setSortByNearest] = useState(true);
 
   // Filters and search
@@ -198,7 +216,13 @@ function App() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDonorModal, setShowDonorModal] = useState(false);
+  const [selectedDonorForContact, setSelectedDonorForContact] = useState(null);
+
+  // Request modal form states
   const [requestModalItem, setRequestModalItem] = useState(null);
+  const [requesterName, setRequesterName] = useState("");
+  const [requesterPhone, setRequesterPhone] = useState("");
+  const [requestDate, setRequestDate] = useState(new Date().toISOString().split("T")[0]);
   const [requestNote, setRequestNote] = useState("");
   const [toast, setToast] = useState("");
 
@@ -206,13 +230,15 @@ function App() {
   const [bloodGroup, setBloodGroup] = useState("All groups");
   const [bloodSearch, setBloodSearch] = useState("");
 
-  // New Item State with explicit location
+  // New Item State with both phone and email
   const [newItem, setNewItem] = useState({
     name: "",
     category: "Study",
     type: "Borrow",
     description: "",
     area: "Saraswathipuram, Mysuru",
+    phone: "",
+    email: "",
     lat: 12.302,
     lng: 76.635,
     image: "",
@@ -225,7 +251,8 @@ function App() {
     name: "",
     group: "O+",
     area: "",
-    contact: "",
+    phone: "",
+    email: "",
   });
 
   // Save changes to localStorage
@@ -255,7 +282,13 @@ function App() {
 
   // Handle ESC key and scroll lock
   useEffect(() => {
-    const isAnyModalOpen = showAddModal || showDonorModal || Boolean(selectedItem) || Boolean(requestModalItem);
+    const isAnyModalOpen =
+      showAddModal ||
+      showDonorModal ||
+      Boolean(selectedItem) ||
+      Boolean(requestModalItem) ||
+      Boolean(selectedDonorForContact);
+
     document.body.style.overflow = isAnyModalOpen ? "hidden" : "";
 
     const handleKeyDown = (e) => {
@@ -264,6 +297,7 @@ function App() {
         setShowDonorModal(false);
         setSelectedItem(null);
         setRequestModalItem(null);
+        setSelectedDonorForContact(null);
       }
     };
 
@@ -272,18 +306,18 @@ function App() {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [showAddModal, showDonorModal, selectedItem, requestModalItem]);
+  }, [showAddModal, showDonorModal, selectedItem, requestModalItem, selectedDonorForContact]);
 
   function showMessage(message) {
     setToast(message);
     window.clearTimeout(window._toastTimer);
-    window._toastTimer = window.setTimeout(() => setToast(""), 3800);
+    window._toastTimer = window.setTimeout(() => setToast(""), 4200);
   }
 
   // Detect live GPS for browsing user
   function detectUserGPS() {
     if (!navigator.geolocation) {
-      showMessage("Geolocation is not supported by your browser. You can type your location.");
+      showMessage("Geolocation is not supported by your browser. You can select your neighborhood.");
       return;
     }
 
@@ -296,7 +330,6 @@ function App() {
         const lng = position.coords.longitude;
         let detectedName = "Your GPS Location";
 
-        // Try reverse geocoding via OpenStreetMap free nominatim API
         try {
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`,
@@ -309,7 +342,7 @@ function App() {
             detectedName = sub ? `${sub}, ${city}` : city;
           }
         } catch {
-          // fallback gracefully
+          // fallback
         }
 
         setUserLocation({
@@ -323,7 +356,7 @@ function App() {
       },
       () => {
         setLocationLoading(false);
-        showMessage("Could not access GPS. You can manually choose or type your neighborhood.");
+        showMessage("Could not access GPS. You can manually choose your neighborhood.");
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
     );
@@ -415,7 +448,6 @@ function App() {
           .toLowerCase()
           .includes(query);
 
-      // Distance radius filter
       let matchesDistance = true;
       if (maxDistance !== "all" && item.distance !== null) {
         matchesDistance = item.distance <= parseFloat(maxDistance);
@@ -469,11 +501,15 @@ function App() {
     }
 
     if (!newItem.area.trim()) {
-      showMessage("Please enter the pickup location/neighborhood for this item.");
+      showMessage("Please enter the pickup location/neighborhood.");
       return;
     }
 
-    // Match typed area with known coordinates if not set by GPS
+    if (!newItem.phone.trim() && !newItem.email.trim()) {
+      showMessage("Please enter at least your WhatsApp phone or email so borrowers can notify you.");
+      return;
+    }
+
     let finalLat = newItem.lat;
     let finalLng = newItem.lng;
 
@@ -494,6 +530,8 @@ function App() {
       owner: "You",
       price: newItem.type === "Borrow" ? "Free to borrow" : "Free to keep",
       area: newItem.area.trim(),
+      phone: newItem.phone.trim() || "+919876543210",
+      email: newItem.email.trim() || "you@community.local",
       lat: finalLat,
       lng: finalLng,
       image:
@@ -509,6 +547,8 @@ function App() {
       type: "Borrow",
       description: "",
       area: userLocation.name || "Saraswathipuram, Mysuru",
+      phone: "",
+      email: "",
       lat: userLocation.lat,
       lng: userLocation.lng,
       image: "",
@@ -516,19 +556,51 @@ function App() {
     setImagePreview("");
     setActiveFilter("All");
     setSearch("");
-    showMessage(`🎉 "${item.name}" listed at ${item.area}! Nearby neighbors can now find it.`);
+    showMessage(`🎉 "${item.name}" listed at ${item.area}! You will be notified on WhatsApp or Email when requested.`);
   }
 
   function openRequestDialog(item) {
     setSelectedItem(null);
     setRequestModalItem(item);
-    setRequestNote(`Hi ${item.owner}, I would love to ${item.type.toLowerCase()} your "${item.name}". I am located in ${userLocation.name} (${distanceLabel(item.distance)}). Let me know when convenient for pickup!`);
+    setRequesterName("");
+    setRequesterPhone("");
+    setRequestDate(new Date().toISOString().split("T")[0]);
+    setRequestNote(`Hi ${item.owner}, I would like to ${item.type.toLowerCase()} your "${item.name}". Please let me know if it's available!`);
   }
 
-  function sendRequest(e) {
+  // Construct message text
+  function generateRequestMessage() {
+    if (!requestModalItem) return "";
+    const nameStr = requesterName.trim() || "A nearby neighbor";
+    const phoneStr = requesterPhone.trim() ? ` (Phone: ${requesterPhone.trim()})` : "";
+    return `Hello ${requestModalItem.owner}! 👋\n\nI saw your listing on LifeLink: "${requestModalItem.name}" in ${requestModalItem.area}.\n\nI would love to ${requestModalItem.type.toLowerCase()} it starting on ${requestDate}.\nMy name: ${nameStr}${phoneStr}\nNote: ${requestNote.trim()}\n\nPlease let me know when and where we can meet. Thank you!`;
+  }
+
+  // Send via WhatsApp
+  function notifyViaWhatsApp(e) {
     e.preventDefault();
     if (!requestModalItem) return;
-    showMessage(`✓ Request sent to ${requestModalItem.owner} for "${requestModalItem.name}"!`);
+
+    const message = generateRequestMessage();
+    const cleanPhone = cleanPhoneNumber(requestModalItem.phone || "919876543210");
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, "_blank");
+    showMessage(`Opening WhatsApp to notify ${requestModalItem.owner} directly!`);
+    setRequestModalItem(null);
+  }
+
+  // Send via Email
+  function notifyViaEmail(e) {
+    e.preventDefault();
+    if (!requestModalItem) return;
+
+    const subject = `LifeLink: Borrow Request for "${requestModalItem.name}"`;
+    const message = generateRequestMessage();
+    const mailtoUrl = `mailto:${requestModalItem.email || "owner@lifelink.local"}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+
+    window.location.href = mailtoUrl;
+    showMessage(`Opening your Email app to notify ${requestModalItem.owner}!`);
     setRequestModalItem(null);
   }
 
@@ -544,7 +616,8 @@ function App() {
       name: newDonor.name.trim(),
       group: newDonor.group,
       area: newDonor.area.trim(),
-      contact: newDonor.contact.trim() || "Available via platform",
+      phone: newDonor.phone.trim() || "+919876543210",
+      email: newDonor.email.trim() || "donor@community.local",
       available: true,
       lastDonated: "Ready to donate",
     };
@@ -552,8 +625,8 @@ function App() {
     setDonors((prev) => [donor, ...prev]);
     setShowDonorModal(false);
     setBloodGroup(donor.group);
-    setNewDonor({ name: "", group: "O+", area: "", contact: "" });
-    showMessage(`Thank you, ${donor.name}! You are registered as a donor in ${donor.area}.`);
+    setNewDonor({ name: "", group: "O+", area: "", phone: "", email: "" });
+    showMessage(`Thank you, ${donor.name}! You are registered with WhatsApp & Email notifications.`);
   }
 
   const visibleDonors = donors.filter((donor) => {
@@ -598,7 +671,7 @@ function App() {
           <div className="hero-copy">
             <div className="eyebrow">
               <span className="status-dot" />
-              LOCATION-BASED NEIGHBORHOOD SHARING
+              LOCATION & DIRECT NOTIFICATIONS
             </div>
 
             <h1>
@@ -608,8 +681,8 @@ function App() {
             </h1>
 
             <p className="hero-description">
-              Find calculators, books, drills, and everyday tools right in your
-              neighborhood. See exact distance, borrow locally, and share things you don't use every day.
+              Find calculators, books, tools, and bicycles near you. When you request an item,
+              the owner gets <strong>instant notifications directly via WhatsApp and Email</strong> to arrange pickup.
             </p>
 
             <div className="hero-actions">
@@ -632,8 +705,8 @@ function App() {
                 <span>+</span>
               </div>
               <p>
-                <strong>Zero buying. Zero waste.</strong>
-                <span>Items sorted from closest to farthest automatically.</span>
+                <strong>Zero buying. Direct connection.</strong>
+                <span>Instant notifications via WhatsApp & Email so owners never miss a request.</span>
               </p>
             </div>
           </div>
@@ -650,25 +723,25 @@ function App() {
                 }}
               />
               <div className="photo-caption">
-                <span className="caption-icon">📍</span>
+                <span className="caption-icon">📱</span>
                 <span>
-                  <strong>Hyper-local Sharing</strong>
-                  <small>Pickup within walking or short driving distance</small>
+                  <strong>Instant Owner Alert</strong>
+                  <small>Direct WhatsApp ping & Email notifications</small>
                 </span>
               </div>
             </div>
             <div className="floating-note note-top">
-              <span className="note-icon">♡</span>
+              <span className="note-icon">💬</span>
               <span>
-                <strong>Give freely</strong>
-                <small>Donate or lend to neighbors</small>
+                <strong>WhatsApp integrated</strong>
+                <small>Chat directly to borrow</small>
               </span>
             </div>
             <div className="floating-note note-bottom">
               <span className="note-icon note-blue">⌖</span>
               <span>
                 <strong>Sorted by proximity</strong>
-                <small>Find items closest to your door</small>
+                <small>Closest items first</small>
               </span>
             </div>
             <div className="hero-spark spark-one">✳</div>
@@ -686,17 +759,17 @@ function App() {
             </span>
           </div>
           <div className="impact-item">
-            <span className="impact-icon">🔄</span>
+            <span className="impact-icon">🔔</span>
             <span>
-              <strong>Borrow & Lend</strong>
-              <small>Free to borrow, easy to return</small>
+              <strong>WhatsApp & Email Alerts</strong>
+              <small>Owners receive requests instantly on their phone</small>
             </span>
           </div>
           <div className="impact-item">
             <span className="impact-icon">♡</span>
             <span>
-              <strong>Emergency Blood Aid</strong>
-              <small>Direct access to local registered donors</small>
+              <strong>Emergency Blood Donors</strong>
+              <small>Direct contact via phone, WhatsApp & email</small>
             </span>
           </div>
         </section>
@@ -780,7 +853,6 @@ function App() {
               )}
             </label>
 
-            {/* Radius Filter */}
             <div className="radius-control">
               <label>
                 <span>Max distance:</span>
@@ -865,7 +937,6 @@ function App() {
                     {item.type === "Borrow" ? "Available to borrow" : "Free donation"}
                   </span>
 
-                  {/* Prominent Distance Tag on Top of Image */}
                   <span className="item-distance-tag">
                     📍 {distanceLabel(item.distance)}
                   </span>
@@ -896,7 +967,7 @@ function App() {
                     </span>
                     <div className="owner-info">
                       <span className="owner-name">{item.owner}</span>
-                      <small className="owner-area">{item.area}</small>
+                      <small className="owner-area">📱 Direct WhatsApp / Email</small>
                     </div>
                     <button
                       className="card-action"
@@ -932,7 +1003,7 @@ function App() {
 
           <div className="community-shelf-meta">
             <p className="demo-note">
-              <span>ⓘ</span> <strong>Live Proximity Engine:</strong> Distances are calculated accurately using the coordinates of your location and each item's pickup spot.
+              <span>ⓘ</span> <strong>Direct Alerts:</strong> When you click Request on any item, it lets you send a direct notification via WhatsApp or Email.
             </p>
             <button
               className="text-action-link"
@@ -954,8 +1025,8 @@ function App() {
             <div className="section-heading centered-heading">
               <div>
                 <div className="eyebrow">SIMPLE & LOCAL</div>
-                <h2>How location-based sharing works</h2>
-                <p>Connecting people within walking or short driving distance.</p>
+                <h2>How instant notifications work</h2>
+                <p>Never wait in the dark. Connect with owners immediately.</p>
               </div>
             </div>
 
@@ -963,20 +1034,20 @@ function App() {
               <article className="step-card">
                 <span className="step-number">01</span>
                 <div className="step-icon">📍</div>
-                <h3>Set your location</h3>
-                <p>Detect your GPS or select your neighborhood so items are automatically sorted by proximity to you.</p>
+                <h3>Browse by distance</h3>
+                <p>See items shared right in your neighborhood, sorted from closest to farthest from your door.</p>
               </article>
               <article className="step-card">
                 <span className="step-number">02</span>
-                <div className="step-icon">🤝</div>
-                <h3>Request to borrow</h3>
-                <p>See items just a few minutes away. Send a direct borrow note to arrange quick pickup with the owner.</p>
+                <div className="step-icon">💬</div>
+                <h3>1-Click WhatsApp Alert</h3>
+                <p>Click Request to open WhatsApp with a pre-written borrow note. The owner’s phone buzzes instantly.</p>
               </article>
               <article className="step-card">
                 <span className="step-number">03</span>
-                <div className="step-icon">📦</div>
-                <h3>Share from your area</h3>
-                <p>List extra tools or study books and specify your pickup neighborhood so nearby neighbors can borrow them.</p>
+                <div className="step-icon">✉️</div>
+                <h3>Email notification</h3>
+                <p>Prefer email? Send an immediate email draft with your requested dates and pickup preferences.</p>
               </article>
             </div>
           </div>
@@ -997,7 +1068,7 @@ function App() {
               </h2>
               <p>
                 LifeLink connects patients and hospitals with verified blood donors registered
-                right in your immediate city and neighborhood.
+                right in your immediate city. Reach donors immediately via WhatsApp or direct email.
               </p>
               <div className="blood-cta-group">
                 <a href="#donor-search" className="button button-dark">
@@ -1038,7 +1109,7 @@ function App() {
                 <div className="eyebrow">BLOOD GROUP DIRECTORY</div>
                 <h3>Find or Register Blood Donors</h3>
                 <p>
-                  Search by blood group and neighborhood area, or register to help patients in emergency need.
+                  Search by blood group and neighborhood area, or register with your contact info to help in medical emergencies.
                 </p>
               </div>
               <button
@@ -1098,11 +1169,9 @@ function App() {
                       <span className="blood-group-pill">{donor.group}</span>
                       <button
                         className="button-contact-donor"
-                        onClick={() =>
-                          showMessage(`Connecting with donor ${donor.name} (${donor.contact}). Please ensure medical verification.`)
-                        }
+                        onClick={() => setSelectedDonorForContact(donor)}
                       >
-                        Contact
+                        Contact Donor 💬
                       </button>
                     </div>
                   ))}
@@ -1121,7 +1190,7 @@ function App() {
           <div>
             <div className="eyebrow">HELP YOUR LOCAL COMMUNITY</div>
             <h2>Have something useful to share?</h2>
-            <p>A neighbor living just 500 meters away might need it right now.</p>
+            <p>List it in 30 seconds and receive instant borrow notifications when a neighbor needs it.</p>
           </div>
           <button className="button button-dark" onClick={() => setShowAddModal(true)}>
             Share an item from your area <span>↗</span>
@@ -1144,7 +1213,7 @@ function App() {
         </a>
       </footer>
 
-      {/* Share / Add Item Modal with Explicit Location Fields */}
+      {/* Share / Add Item Modal with Phone & Email */}
       {showAddModal && (
         <div
           className="modal-backdrop"
@@ -1162,7 +1231,7 @@ function App() {
               <div>
                 <div className="eyebrow">PASS IT FORWARD</div>
                 <h2 id="add-item-title">Share an item</h2>
-                <p>Provide the item details and where neighbors can pick it up.</p>
+                <p>Provide your contact details so borrowers can notify you instantly.</p>
               </div>
               <button
                 className="modal-close"
@@ -1186,7 +1255,7 @@ function App() {
                 />
               </label>
 
-              {/* LOCATION PICKER IN MODAL */}
+              {/* LOCATION PICKER */}
               <div className="modal-location-group">
                 <div className="modal-location-header">
                   <label htmlFor="item-area-input">
@@ -1210,9 +1279,44 @@ function App() {
                   }
                   placeholder="e.g. Gokulam, Saraswathipuram, Kuvempunagar, Indiranagar..."
                 />
-                <small className="field-hint">
-                  Nearby neighbors will see this location and their distance to it.
-                </small>
+              </div>
+
+              {/* CONTACT DETAILS FOR NOTIFICATIONS */}
+              <div className="contact-inputs-card">
+                <div className="contact-card-title">
+                  <span>🔔</span>
+                  <div>
+                    <strong>Your Notification Details (Required)</strong>
+                    <small>Borrowers will notify you here when they want this item.</small>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <label>
+                    Your WhatsApp / Phone Number *
+                    <input
+                      type="tel"
+                      required
+                      value={newItem.phone}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, phone: e.target.value })
+                      }
+                      placeholder="e.g. +91 98765 43210"
+                    />
+                  </label>
+                  <label>
+                    Your Notification Email *
+                    <input
+                      type="email"
+                      required
+                      value={newItem.email}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, email: e.target.value })
+                      }
+                      placeholder="e.g. rahul@gmail.com"
+                    />
+                  </label>
+                </div>
               </div>
 
               <div className="form-row">
@@ -1325,13 +1429,13 @@ function App() {
               </div>
 
               <div className="detail-info-row">
-                <span>Category</span>
-                <strong>{selectedItem.category}</strong>
+                <span>Shared by</span>
+                <strong>{selectedItem.owner}</strong>
               </div>
 
               <div className="detail-info-row">
-                <span>Shared by</span>
-                <strong>{selectedItem.owner}</strong>
+                <span>Notifications supported</span>
+                <strong style={{ color: "#2b8478" }}>✓ WhatsApp & Email alerts</strong>
               </div>
 
               <div className="detail-info-row">
@@ -1347,14 +1451,14 @@ function App() {
                 <span>↗</span>
               </button>
               <p className="form-disclaimer">
-                Connect directly with {selectedItem.owner} in {selectedItem.area}.
+                Connects directly with {selectedItem.owner} via WhatsApp or Email.
               </p>
             </div>
           </section>
         </div>
       )}
 
-      {/* Interactive Request Dialog */}
+      {/* Interactive Request & Direct Notification Dialog */}
       {requestModalItem && (
         <div
           className="modal-backdrop"
@@ -1365,10 +1469,10 @@ function App() {
           <section className="modal-card" role="dialog" aria-modal="true">
             <div className="modal-header">
               <div>
-                <div className="eyebrow">DIRECT NEIGHBORHOOD REQUEST</div>
-                <h2>Connect with {requestModalItem.owner}</h2>
+                <div className="eyebrow">DIRECT NOTIFICATION TO OWNER</div>
+                <h2>Request "{requestModalItem.name}"</h2>
                 <p>
-                  Regarding: <strong>{requestModalItem.name}</strong> (📍 {requestModalItem.area})
+                  Owner: <strong>{requestModalItem.owner}</strong> · 📍 {requestModalItem.area}
                 </p>
               </div>
               <button
@@ -1380,33 +1484,131 @@ function App() {
               </button>
             </div>
 
-            <form className="add-item-form" onSubmit={sendRequest}>
-              <label>
-                Your Message & Pickup Preference
-                <textarea
-                  rows="4"
-                  required
-                  value={requestNote}
-                  onChange={(e) => setRequestNote(e.target.value)}
-                  placeholder="Introduce yourself and specify when you'd like to pick up or return the item..."
-                />
-              </label>
-
-              <div className="form-row">
-                <label>
-                  Preferred Pickup Date
-                  <input type="date" defaultValue={new Date().toISOString().split("T")[0]} />
-                </label>
-                <label>
-                  Your Phone / Contact
-                  <input type="tel" placeholder="+91 98765 43210" required />
-                </label>
+            <div className="request-flow-box">
+              <div className="flow-badge">
+                <span>🔔</span>
+                <small>Choose how you want to notify {requestModalItem.owner}:</small>
               </div>
 
-              <button className="button button-dark submit-button" type="submit">
-                Send Request to {requestModalItem.owner} <span>↗</span>
+              <form className="add-item-form">
+                <div className="form-row">
+                  <label>
+                    Your Name *
+                    <input
+                      required
+                      value={requesterName}
+                      onChange={(e) => setRequesterName(e.target.value)}
+                      placeholder="e.g. Aditi Sharma"
+                    />
+                  </label>
+                  <label>
+                    Your Phone Number (Optional)
+                    <input
+                      type="tel"
+                      value={requesterPhone}
+                      onChange={(e) => setRequesterPhone(e.target.value)}
+                      placeholder="e.g. +91 98765 43210"
+                    />
+                  </label>
+                </div>
+
+                <label>
+                  Preferred Pickup Date
+                  <input
+                    type="date"
+                    value={requestDate}
+                    onChange={(e) => setRequestDate(e.target.value)}
+                  />
+                </label>
+
+                <label>
+                  Your Message to {requestModalItem.owner}
+                  <textarea
+                    rows="3"
+                    value={requestNote}
+                    onChange={(e) => setRequestNote(e.target.value)}
+                    placeholder="Introduce yourself and specify when you'd like to pick up and return the item..."
+                  />
+                </label>
+
+                <div className="dual-action-buttons">
+                  <button
+                    type="button"
+                    className="button button-whatsapp"
+                    onClick={notifyViaWhatsApp}
+                  >
+                    <span>💬</span> Notify on WhatsApp
+                  </button>
+
+                  <button
+                    type="button"
+                    className="button button-email"
+                    onClick={notifyViaEmail}
+                  >
+                    <span>✉️</span> Notify via Email
+                  </button>
+                </div>
+
+                <p className="form-disclaimer">
+                  Clicking either button opens your WhatsApp or Email app with a pre-written message to {requestModalItem.owner}!
+                </p>
+              </form>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* Contact Donor Modal */}
+      {selectedDonorForContact && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setSelectedDonorForContact(null);
+          }}
+        >
+          <section className="modal-card" role="dialog" aria-modal="true">
+            <div className="modal-header">
+              <div>
+                <div className="eyebrow blood-eyebrow">EMERGENCY CONTACT</div>
+                <h2>Connect with {selectedDonorForContact.name}</h2>
+                <p>Blood Group: <strong>{selectedDonorForContact.group}</strong> · 📍 {selectedDonorForContact.area}</p>
+              </div>
+              <button
+                className="modal-close"
+                onClick={() => setSelectedDonorForContact(null)}
+                aria-label="Close"
+              >
+                ×
               </button>
-            </form>
+            </div>
+
+            <div className="donor-contact-options">
+              <a
+                href={`https://wa.me/${cleanPhoneNumber(selectedDonorForContact.phone || "919876543210")}?text=${encodeURIComponent(`Hello ${selectedDonorForContact.name}, I found your contact on LifeLink. We have an urgent requirement for ${selectedDonorForContact.group} blood in ${selectedDonorForContact.area}. Are you available?`)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="button button-whatsapp"
+                style={{ width: "100%", textDecoration: "none" }}
+              >
+                <span>💬</span> WhatsApp {selectedDonorForContact.name}
+              </a>
+
+              <a
+                href={`mailto:${selectedDonorForContact.email || "donor@lifelink.local"}?subject=${encodeURIComponent(`Urgent: Blood Donation Request (${selectedDonorForContact.group})`)}&body=${encodeURIComponent(`Hello ${selectedDonorForContact.name},\n\nWe urgently require ${selectedDonorForContact.group} blood in ${selectedDonorForContact.area}. Please contact us if you are available to donate.\n\nThank you!`)}`}
+                className="button button-email"
+                style={{ width: "100%", textDecoration: "none" }}
+              >
+                <span>✉️</span> Send Emergency Email
+              </a>
+
+              <a
+                href={`tel:${cleanPhoneNumber(selectedDonorForContact.phone || "919876543210")}`}
+                className="button button-outline"
+                style={{ width: "100%", textDecoration: "none" }}
+              >
+                <span>📞</span> Direct Phone Call ({selectedDonorForContact.phone})
+              </a>
+            </div>
           </section>
         </div>
       )}
@@ -1469,21 +1671,34 @@ function App() {
                 </label>
               </div>
 
-              <label>
-                Contact Number
-                <input
-                  type="tel"
-                  value={newDonor.contact}
-                  onChange={(e) => setNewDonor({ ...newDonor, contact: e.target.value })}
-                  placeholder="e.g. +91 98765 43210"
-                />
-              </label>
+              <div className="form-row">
+                <label>
+                  WhatsApp / Contact Phone *
+                  <input
+                    type="tel"
+                    required
+                    value={newDonor.phone}
+                    onChange={(e) => setNewDonor({ ...newDonor, phone: e.target.value })}
+                    placeholder="e.g. +91 98765 43210"
+                  />
+                </label>
+                <label>
+                  Notification Email *
+                  <input
+                    type="email"
+                    required
+                    value={newDonor.email}
+                    onChange={(e) => setNewDonor({ ...newDonor, email: e.target.value })}
+                    placeholder="e.g. donor@gmail.com"
+                  />
+                </label>
+              </div>
 
               <button className="button button-dark submit-button" type="submit">
                 Complete Registration <span>+</span>
               </button>
               <p className="form-disclaimer">
-                Your profile will be visible to local patients in medical need.
+                Patients in emergency medical need will be able to alert you via WhatsApp or Email.
               </p>
             </form>
           </section>
