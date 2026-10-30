@@ -762,6 +762,12 @@ function App() {
           <div className="hero-visual" aria-label="Visual of community items">
             <div className="hero-orbit orbit-one" />
             <div className="hero-orbit orbit-two" />
+            <div className="neon-glass-orb orb-cyan" />
+            <div className="neon-glass-orb orb-purple" />
+            <div className="neon-glass-orb orb-blue" />
+            <div className="neon-glass-chip chip-plus">+</div>
+            <div className="neon-glass-chip chip-cross">✕</div>
+
             <div className="hero-photo-card hero-photo-main">
               <img
                 src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=85"
@@ -778,6 +784,20 @@ function App() {
                 </span>
               </div>
             </div>
+
+            {/* Neon Glass Progress Pill widget (from Image 2) */}
+            <div className="neon-glass-pill-widget">
+              <div className="neon-pill-row">
+                <span className="neon-status-dot" />
+                <span className="neon-pill-title">Nearby Sharing</span>
+                <span className="neon-pill-pct">Active 98%</span>
+                <span className="neon-pill-x">✕</span>
+              </div>
+              <div className="neon-pill-bar-track">
+                <div className="neon-pill-bar-fill" />
+              </div>
+            </div>
+
             <div className="floating-note note-top">
               <span className="note-icon">💬</span>
               <span>
@@ -1101,53 +1121,59 @@ function App() {
           </div>
         </section>
 
-        {/* Blood Donation Section */}
+        {/* Blood Donation Section — Liquid Glass Design (Image 1 reference) */}
         <section className="blood-section section-wrap" id="blood-donation">
-          <div className="blood-card">
-            <div className="blood-copy">
-              <div className="eyebrow blood-eyebrow">
-                <span className="blood-pulse">+</span>
-                LOCAL EMERGENCY NETWORK
-              </div>
-              <h2>
-                Some things are shared.
-                <br />
-                <span>Some things save lives.</span>
-              </h2>
-              <p>
-                LifeLink connects patients and hospitals with verified blood donors registered
-                right in your immediate city. Reach donors immediately via WhatsApp or direct email.
-              </p>
-              <div className="blood-cta-group">
-                <a href="#donor-search" className="button button-dark">
-                  Find blood donors <span>↘</span>
-                </a>
-                <button
-                  className="button button-outline"
-                  onClick={() => setShowDonorModal(true)}
-                >
-                  Register as donor +
-                </button>
-              </div>
-              <small className="blood-safety">
-                Blood donations must always follow certified healthcare safety protocols at verified clinics or hospitals.
-              </small>
+          <div className="liquid-glass-banner">
+            <div className="liquid-ambient-orb orb-1" />
+            <div className="liquid-ambient-orb orb-2" />
+            <div className="liquid-ambient-orb orb-3" />
+
+            <div className="liquid-nav-badge">
+              <span className="liquid-badge-dot" />
+              <span>Fluid Network</span>
             </div>
 
-            <div className="blood-visual">
-              <div className="blood-orbit" />
-              <div className="blood-drop">
-                <span>+</span>
+            <h2 className="liquid-title">
+              Donations that
+              <br />
+              flows
+            </h2>
+
+            <p className="liquid-subtitle">
+              The community blood emergency network. Fluid, responsive, and lifesaving in every neighborhood.
+            </p>
+
+            <div className="liquid-actions">
+              <button
+                className="liquid-btn-glass"
+                onClick={() => setShowDonorModal(true)}
+              >
+                Register as Donor
+              </button>
+              <a href="#donor-search" className="liquid-btn-white">
+                View Donors
+              </a>
+            </div>
+
+            {/* 3 Liquid Glass Cards from Image 1 */}
+            <div className="liquid-cards-grid">
+              <div className="liquid-feature-card">
+                <div className="liquid-card-icon">✨</div>
+                <h4>Adaptive Connect</h4>
+                <p>Instant direct notification via WhatsApp & Email to nearby donors in minutes.</p>
               </div>
-              <div className="blood-mini-card">
-                <span className="mini-blood-icon">+</span>
-                <span>
-                  <strong>Gift of life</strong>
-                  <small>Donate safely. Save someone.</small>
-                </span>
+
+              <div className="liquid-feature-card">
+                <div className="liquid-card-icon">🌊</div>
+                <h4>Fluid Directory</h4>
+                <p>All blood groups (O-, A+, B+, AB-) organized by live proximity in your city.</p>
               </div>
-              <span className="blood-star blood-star-one">✳</span>
-              <span className="blood-star blood-star-two">✧</span>
+
+              <div className="liquid-feature-card">
+                <div className="liquid-card-icon">🎨</div>
+                <h4>Safe & Voluntary</h4>
+                <p>100% free community sharing adhering to certified healthcare clinic protocols.</p>
+              </div>
             </div>
           </div>
 
