@@ -20,6 +20,10 @@ import {
   getLostFound,
   getOwnerIncomingRequests,
   getNotifications,
+  STARTER_ITEMS,
+  STARTER_DONORS,
+  STARTER_URGENT_NEEDS,
+  STARTER_LOST_FOUND,
 } from "./services/api";
 import { supabase } from "./supabase";
 import "./App.css";
@@ -61,11 +65,47 @@ function MainApp() {
   // Geolocation
   const [userCoords, setUserCoords] = useState(DEFAULT_COORDS);
 
-  // Data states
-  const [items, setItems] = useState([]);
-  const [donors, setDonors] = useState([]);
-  const [urgentNeeds, setUrgentNeeds] = useState([]);
-  const [lostFound, setLostFound] = useState([]);
+  // Data states with instant SWR initial state (0ms load time)
+  const [items, setItems] = useState(() => {
+    try {
+      const c = localStorage.getItem("lifelink_cached_items");
+      if (c) {
+        const parsed = JSON.parse(c);
+        if (parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return STARTER_ITEMS;
+  });
+  const [donors, setDonors] = useState(() => {
+    try {
+      const c = localStorage.getItem("lifelink_cached_donors");
+      if (c) {
+        const parsed = JSON.parse(c);
+        if (parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return STARTER_DONORS;
+  });
+  const [urgentNeeds, setUrgentNeeds] = useState(() => {
+    try {
+      const c = localStorage.getItem("lifelink_cached_urgent_needs");
+      if (c) {
+        const parsed = JSON.parse(c);
+        if (parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return STARTER_URGENT_NEEDS;
+  });
+  const [lostFound, setLostFound] = useState(() => {
+    try {
+      const c = localStorage.getItem("lifelink_cached_lost_found");
+      if (c) {
+        const parsed = JSON.parse(c);
+        if (parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return STARTER_LOST_FOUND;
+  });
 
   // Modals
   const [selectedItem, setSelectedItem] = useState(null);

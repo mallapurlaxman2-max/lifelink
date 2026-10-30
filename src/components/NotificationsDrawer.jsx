@@ -16,9 +16,27 @@ export default function NotificationsDrawer({
 }) {
   const { user, profile } = useAuth();
   const [activeTab, setActiveTab] = useState("incoming"); // 'incoming', 'my_requests', 'alerts'
-  const [incoming, setIncoming] = useState([]);
-  const [myRequests, setMyRequests] = useState([]);
-  const [alerts, setAlerts] = useState([]);
+  const [incoming, setIncoming] = useState(() => {
+    try {
+      const c = localStorage.getItem("lifelink_cached_incoming");
+      if (c) return JSON.parse(c);
+    } catch (e) {}
+    return [];
+  });
+  const [myRequests, setMyRequests] = useState(() => {
+    try {
+      const c = localStorage.getItem("lifelink_cached_myrequests");
+      if (c) return JSON.parse(c);
+    } catch (e) {}
+    return [];
+  });
+  const [alerts, setAlerts] = useState(() => {
+    try {
+      const c = localStorage.getItem("lifelink_cached_alerts");
+      if (c) return JSON.parse(c);
+    } catch (e) {}
+    return [];
+  });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,16 +46,26 @@ export default function NotificationsDrawer({
   }, [isOpen, user]);
 
   async function loadData() {
-    setLoading(true);
+    if (incoming.length === 0 && myRequests.length === 0 && alerts.length === 0) {
+      setLoading(true);
+    }
     try {
       const [inc, myReq, ntf] = await Promise.all([
         getOwnerIncomingRequests(user.id, profile?.full_name),
         getUserRequests(user.id),
         getNotifications(user.id),
       ]);
-      setIncoming(inc || []);
-      setMyRequests(myReq || []);
-      setAlerts(ntf || []);
+      const incList = inc || [];
+      const reqList = myReq || [];
+      const ntfList = ntf || [];
+      setIncoming(incList);
+      setMyRequests(reqList);
+      setAlerts(ntfList);
+      try {
+        localStorage.setItem("lifelink_cached_incoming", JSON.stringify(incList));
+        localStorage.setItem("lifelink_cached_myrequests", JSON.stringify(reqList));
+        localStorage.setItem("lifelink_cached_alerts", JSON.stringify(ntfList));
+      } catch (e) {}
     } catch (err) {
       console.warn("Could not load drawer data:", err);
     } finally {
@@ -47,19 +75,31 @@ export default function NotificationsDrawer({
 
   async function handleApprove(reqId) {
     try {
+      // Optimistic instant UI update
+      setIncoming((prev) =>
+        prev.map((r) => (r.id === reqId ? { ...r, status: "approved" } : r))
+      );
       await approveRequest(reqId);
       loadData();
     } catch (err) {
+      console.error("Approval error:", err);
       alert(err.message || "Approval failed.");
+      loadData();
     }
   }
 
   async function handleReject(reqId) {
     try {
+      // Optimistic instant UI update
+      setIncoming((prev) =>
+        prev.map((r) => (r.id === reqId ? { ...r, status: "rejected" } : r))
+      );
       await rejectRequest(reqId);
       loadData();
     } catch (err) {
+      console.error("Rejection error:", err);
       alert(err.message || "Rejection failed.");
+      loadData();
     }
   }
 

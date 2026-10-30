@@ -189,28 +189,24 @@ export const STARTER_LOST_FOUND = [
 // --- ITEMS API ---
 export async function getItems() {
   try {
-    // Try public view first for privacy-shielded items
     const { data, error } = await supabase
-      .from("public_items")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data && data.length > 0) {
-      return data;
-    }
-
-    // Fallback to items table directly
-    const { data: rawItems, error: rawError } = await supabase
       .from("items")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!rawError && rawItems && rawItems.length > 0) {
-      return rawItems;
+    if (!error && data && data.length > 0) {
+      try {
+        localStorage.setItem("lifelink_cached_items", JSON.stringify(data));
+      } catch (e) {}
+      return data;
     }
   } catch (err) {
     console.warn("Using starter items fallback:", err.message);
   }
+  try {
+    const cached = localStorage.getItem("lifelink_cached_items");
+    if (cached) return JSON.parse(cached);
+  } catch (e) {}
   return STARTER_ITEMS;
 }
 
@@ -224,25 +220,23 @@ export async function createItem(item) {
 export async function getDonors() {
   try {
     const { data, error } = await supabase
-      .from("public_donors")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data && data.length > 0) {
-      return data;
-    }
-
-    const { data: rawDonors, error: rawError } = await supabase
       .from("donors")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!rawError && rawDonors && rawDonors.length > 0) {
-      return rawDonors;
+    if (!error && data && data.length > 0) {
+      try {
+        localStorage.setItem("lifelink_cached_donors", JSON.stringify(data));
+      } catch (e) {}
+      return data;
     }
   } catch (err) {
     console.warn("Using starter donors fallback:", err.message);
   }
+  try {
+    const cached = localStorage.getItem("lifelink_cached_donors");
+    if (cached) return JSON.parse(cached);
+  } catch (e) {}
   return STARTER_DONORS;
 }
 
@@ -363,11 +357,18 @@ export async function approveRequest(requestId) {
     p_request_id: requestId,
   });
   if (error) {
-    // Fallback direct update
-    return await supabase
+    console.warn("approve_borrow_request RPC error, falling back:", error.message);
+    const { data: fallback, error: fbErr } = await supabase
       .from("requests")
-      .update({ status: "approved" })
-      .eq("id", requestId);
+      .update({ status: "approved", updated_at: new Date().toISOString() })
+      .eq("id", requestId)
+      .select()
+      .single();
+    if (fbErr) throw fbErr;
+    return fallback;
+  }
+  if (data && data.success === false) {
+    throw new Error(data.error || "Approval failed.");
   }
   return data;
 }
@@ -378,10 +379,18 @@ export async function rejectRequest(requestId, reason) {
     p_reason: reason || "Unavailable at this time",
   });
   if (error) {
-    return await supabase
+    console.warn("reject_borrow_request RPC error, falling back:", error.message);
+    const { data: fallback, error: fbErr } = await supabase
       .from("requests")
-      .update({ status: "rejected" })
-      .eq("id", requestId);
+      .update({ status: "rejected", updated_at: new Date().toISOString() })
+      .eq("id", requestId)
+      .select()
+      .single();
+    if (fbErr) throw fbErr;
+    return fallback;
+  }
+  if (data && data.success === false) {
+    throw new Error(data.error || "Rejection failed.");
   }
   return data;
 }
@@ -409,21 +418,23 @@ export async function confirmHandover({ token, code }) {
 export async function getUrgentNeeds() {
   try {
     const { data, error } = await supabase
-      .from("public_urgent_needs")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data && data.length > 0) return data;
-
-    const { data: raw, error: rawErr } = await supabase
       .from("urgent_needs")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!rawErr && raw && raw.length > 0) return raw;
+    if (!error && data && data.length > 0) {
+      try {
+        localStorage.setItem("lifelink_cached_urgent_needs", JSON.stringify(data));
+      } catch (e) {}
+      return data;
+    }
   } catch (err) {
     console.warn("Using starter urgent needs fallback:", err.message);
   }
+  try {
+    const cached = localStorage.getItem("lifelink_cached_urgent_needs");
+    if (cached) return JSON.parse(cached);
+  } catch (e) {}
   return STARTER_URGENT_NEEDS;
 }
 
@@ -437,21 +448,23 @@ export async function createUrgentNeed(need) {
 export async function getLostFound() {
   try {
     const { data, error } = await supabase
-      .from("public_lost_found")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data && data.length > 0) return data;
-
-    const { data: raw, error: rawErr } = await supabase
       .from("lost_found")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!rawErr && raw && raw.length > 0) return raw;
+    if (!error && data && data.length > 0) {
+      try {
+        localStorage.setItem("lifelink_cached_lost_found", JSON.stringify(data));
+      } catch (e) {}
+      return data;
+    }
   } catch (err) {
     console.warn("Using starter lost/found fallback:", err.message);
   }
+  try {
+    const cached = localStorage.getItem("lifelink_cached_lost_found");
+    if (cached) return JSON.parse(cached);
+  } catch (e) {}
   return STARTER_LOST_FOUND;
 }
 
