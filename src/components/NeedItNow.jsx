@@ -29,6 +29,7 @@ export default function NeedItNow({ needs = [], onRefresh, onNotifyToast }) {
     try {
       await createUrgentNeed({
         title,
+        item_name: title,
         category,
         urgency,
         description,
@@ -102,7 +103,7 @@ export default function NeedItNow({ needs = [], onRefresh, onNotifyToast }) {
                 <span className="urgent-area">📍 {need.area}</span>
               </div>
 
-              <h3 className="urgent-card-title">{need.title}</h3>
+              <h3 className="urgent-card-title">{need.title || need.item_name}</h3>
               <p className="urgent-card-desc">{need.description}</p>
 
               <div className="urgent-card-footer">
