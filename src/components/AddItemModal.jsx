@@ -120,6 +120,7 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
         area: area.trim(),
         image: finalImage,
         owner: profile?.full_name || user?.user_metadata?.full_name || "Neighbor",
+        user_id: user?.id || null,
         owner_id: user?.id || null,
         phone: profile?.phone || user?.user_metadata?.phone || "+919876543210",
         email: user?.email || "neighbor@lifelink.local",
