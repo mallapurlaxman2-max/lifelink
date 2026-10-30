@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -10,6 +10,7 @@ import HandoverModal from "./components/HandoverModal";
 import NeedItNow from "./components/NeedItNow";
 import BloodNetwork from "./components/BloodNetwork";
 import LostFound from "./components/LostFound";
+import MyBorrows from "./components/MyBorrows";
 import AuthModal from "./components/AuthModal";
 import NotificationsDrawer from "./components/NotificationsDrawer";
 import Footer from "./components/Footer";
@@ -143,7 +144,7 @@ function MainApp() {
     }
   }
 
-  // Detect GPS Location gracefully
+  // Detect GPS Location gracefully and accurately
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -155,9 +156,9 @@ function MainApp() {
           });
         },
         () => {
-          // Use default Mysuru coordinates without nagging
+          // Use default Belagavi coordinates without nagging
         },
-        { timeout: 5000, maximumAge: 600000 }
+        { timeout: 8000, maximumAge: 60000, enableHighAccuracy: true }
       );
     }
   }, []);
@@ -172,15 +173,7 @@ function MainApp() {
         getLostFound(),
       ]);
 
-      // Calculate distance for items
-      const withDistance = itms.map((item) => {
-        const itemLat = item.lat || 12.3025;
-        const itemLng = item.lng || 76.632;
-        const dist = calculateDistance(userCoords.lat, userCoords.lng, itemLat, itemLng);
-        return { ...item, distance: dist !== null ? dist : 2.5 };
-      });
-
-      setItems(withDistance);
+      setItems(itms || []);
       setDonors(dnrs || []);
       setUrgentNeeds(urg || []);
       setLostFound(lf || []);
@@ -188,6 +181,24 @@ function MainApp() {
       console.warn("Data loading note:", err.message);
     }
   }
+
+  // Reactive distance calculation: dynamically updates whenever items OR userCoords change!
+  const itemsWithDistance = useMemo(() => {
+    return items.map((item) => {
+      const itemLat = Number(item.lat) || 15.8528;
+      const itemLng = Number(item.lng) || 74.5045;
+      const dist = calculateDistance(userCoords.lat, userCoords.lng, itemLat, itemLng);
+      return {
+        ...item,
+        distance: dist !== null ? dist : 0.8,
+      };
+    });
+  }, [items, userCoords]);
+
+  const selectedItemWithDist = useMemo(() => {
+    if (!selectedItem) return null;
+    return itemsWithDistance.find((it) => it.id === selectedItem.id) || selectedItem;
+  }, [selectedItem, itemsWithDistance]);
 
   useEffect(() => {
     loadAllData();
@@ -211,7 +222,7 @@ function MainApp() {
       supabase.removeChannel(itemsChannel);
       supabase.removeChannel(donorsChannel);
     };
-  }, [userCoords]);
+  }, []);
 
   // Real-time Notification & Request Subscriptions for logged-in user
   useEffect(() => {
@@ -261,7 +272,8 @@ function MainApp() {
   const distanceLabel = (dist) => {
     if (dist === null || dist === undefined) return "Nearby";
     if (dist < 1) return `${Math.round(dist * 1000)} m away`;
-    return `${dist} km away`;
+    if (dist >= 50) return `${Math.round(dist)} km away`;
+    return `${Number(dist).toFixed(1)} km away`;
   };
 
   return (
@@ -294,7 +306,7 @@ function MainApp() {
         {/* Main Tab Content */}
         {activeTab === "marketplace" && (
           <Marketplace
-            items={items}
+            items={itemsWithDistance}
             search={search}
             setSearch={setSearch}
             category={category}
@@ -331,12 +343,21 @@ function MainApp() {
             onNotifyToast={showToast}
           />
         )}
+
+        {activeTab === "myborrows" && (
+          <MyBorrows
+            onOpenHandover={(req) => setHandoverRequest(req)}
+            onNotifyToast={showToast}
+            onBrowseMarketplace={() => setActiveTab("marketplace")}
+            onOpenAuth={() => setShowAuthModal(true)}
+          />
+        )}
       </main>
 
       {/* Modals & Slide-out Drawers */}
       {selectedItem && (
         <ItemDetailModal
-          item={selectedItem}
+          item={selectedItemWithDist}
           onClose={() => setSelectedItem(null)}
           onRequest={(item) => {
             setSelectedItem(null);
@@ -363,6 +384,7 @@ function MainApp() {
 
       {showAddItem && (
         <AddItemModal
+          userCoords={userCoords}
           onClose={() => setShowAddItem(false)}
           onSuccess={() => {
             loadAllData();

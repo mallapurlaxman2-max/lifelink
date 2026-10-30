@@ -48,7 +48,7 @@ function compressImage(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
+export default function AddItemModal({ userCoords, onClose, onSuccess, onNotifyToast }) {
   const { user, profile } = useAuth();
   const fileInputRef = useRef(null);
 
@@ -119,6 +119,8 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
         type,
         description: description.trim(),
         area: area.trim(),
+        lat: userCoords?.lat || 15.8528,
+        lng: userCoords?.lng || 74.5045,
         image: finalImage,
         owner: profile?.full_name || user?.user_metadata?.full_name || "Neighbor",
         user_id: user?.id || null,

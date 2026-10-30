@@ -305,6 +305,12 @@ export async function createBorrowRequest({
       .single();
 
     if (insertError) throw insertError;
+    try {
+      const existing = JSON.parse(localStorage.getItem("lifelink_my_request_ids") || "[]");
+      if (inserted?.id && !existing.includes(inserted.id)) {
+        localStorage.setItem("lifelink_my_request_ids", JSON.stringify([...existing, inserted.id]));
+      }
+    } catch (e) {}
     return inserted;
   }
 
@@ -312,44 +318,87 @@ export async function createBorrowRequest({
     throw new Error(data.error || "Borrow request was rejected by server rules.");
   }
 
+  try {
+    const existing = JSON.parse(localStorage.getItem("lifelink_my_request_ids") || "[]");
+    if (data?.request_id && !existing.includes(data.request_id)) {
+      localStorage.setItem("lifelink_my_request_ids", JSON.stringify([...existing, data.request_id]));
+    }
+  } catch (e) {}
+
   return data;
 }
 
-export async function getUserRequests(userId) {
-  if (!userId) return [];
-  const { data, error } = await supabase
-    .from("requests")
-    .select("*, items(name, image, area, owner)")
-    .eq("borrower_id", userId)
-    .order("created_at", { ascending: false });
+export async function getUserRequests(userId, userName = null) {
+  try {
+    let query = supabase.from("requests").select("*, items(name, image, area, owner)");
+    if (userId && userName) {
+      query = query.or(`borrower_id.eq.${userId},borrower_name.ilike.%${userName}%`);
+    } else if (userId) {
+      query = query.eq("borrower_id", userId);
+    } else if (userName) {
+      query = query.ilike("borrower_name", `%${userName}%`);
+    } else {
+      // For guest users, retrieve IDs of requests made from this device
+      try {
+        const localIds = JSON.parse(localStorage.getItem("lifelink_my_request_ids") || "[]");
+        if (localIds.length > 0) {
+          query = query.in("id", localIds);
+        } else {
+          return [];
+        }
+      } catch (e) {
+        return [];
+      }
+    }
 
-  if (error) {
-    console.warn("Could not fetch user requests:", error.message);
+    const { data, error } = await query.order("created_at", { ascending: false });
+    if (error) {
+      console.warn("Could not fetch user requests:", error.message);
+      return [];
+    }
+    return data || [];
+  } catch (e) {
+    console.warn("getUserRequests exception:", e);
     return [];
   }
-  return data || [];
 }
 
 export async function getOwnerIncomingRequests(userId, ownerName = null) {
-  if (!userId) return [];
-  const { data, error } = await supabase
-    .from("requests")
-    .select("*, items(name, image, area, owner)")
-    .eq("owner_id", userId)
-    .order("created_at", { ascending: false });
+  try {
+    let query = supabase.from("requests").select("*, items(name, image, area, owner)");
+    if (userId && ownerName) {
+      query = query.or(`owner_id.eq.${userId},items.owner.ilike.%${ownerName}%`);
+    } else if (userId) {
+      query = query.eq("owner_id", userId);
+    } else if (ownerName) {
+      const { data: byName } = await supabase
+        .from("requests")
+        .select("*, items!inner(name, image, area, owner)")
+        .ilike("items.owner", `%${ownerName}%`)
+        .order("created_at", { ascending: false });
+      if (byName && byName.length > 0) return byName;
+      return [];
+    } else {
+      return [];
+    }
 
-  if (!error && data && data.length > 0) return data;
+    const { data, error } = await query.order("created_at", { ascending: false });
+    if (!error && data && data.length > 0) return data;
 
-  if (ownerName) {
-    const { data: byName } = await supabase
-      .from("requests")
-      .select("*, items!inner(name, image, area, owner)")
-      .ilike("items.owner", `%${ownerName}%`)
-      .order("created_at", { ascending: false });
-    if (byName && byName.length > 0) return byName;
+    if (ownerName) {
+      const { data: byName } = await supabase
+        .from("requests")
+        .select("*, items!inner(name, image, area, owner)")
+        .ilike("items.owner", `%${ownerName}%`)
+        .order("created_at", { ascending: false });
+      if (byName && byName.length > 0) return byName;
+    }
+
+    return data || [];
+  } catch (e) {
+    console.warn("getOwnerIncomingRequests exception:", e);
+    return [];
   }
-
-  return data || [];
 }
 
 export async function approveRequest(requestId) {

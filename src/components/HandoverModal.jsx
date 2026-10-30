@@ -162,13 +162,13 @@ export default function HandoverModal({
             className={`stage-tab ${stage === "pickup" ? "active" : ""}`}
             onClick={() => setStage("pickup")}
           >
-            📦 Stage 1: Pickup
+            📦 Stage 1: Pickup (Borrowing)
           </button>
           <button
             className={`stage-tab ${stage === "return" ? "active" : ""}`}
             onClick={() => setStage("return")}
           >
-            🔄 Stage 2: Return
+            🔄 Stage 2: Return (Giving Back)
           </button>
         </div>
 
@@ -179,16 +179,16 @@ export default function HandoverModal({
             onClick={() => setActiveTab("generate")}
           >
             {stage === "pickup"
-              ? isOwner ? "📱 Handover Code (Owner)" : "📱 Show My Code"
-              : isBorrower ? "📱 Return Code (Borrower)" : "📱 Show My Code"}
+              ? "📱 Owner: Show Handover Code"
+              : "📱 Borrower: Show Return Code"}
           </button>
           <button
             className={`type-toggle-btn ${activeTab === "confirm" ? "active" : ""}`}
             onClick={() => setActiveTab("confirm")}
           >
             {stage === "pickup"
-              ? isBorrower ? "⌨️ Enter Pickup Code" : "⌨️ Enter Code"
-              : isOwner ? "⌨️ Enter Return Code" : "⌨️ Enter Code"}
+              ? "⌨️ Borrower: Enter Pickup Code"
+              : "⌨️ Owner: Enter Return Code"}
           </button>
         </div>
 

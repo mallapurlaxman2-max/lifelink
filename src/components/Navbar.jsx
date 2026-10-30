@@ -73,6 +73,16 @@ export default function Navbar({
         >
           Lost & Found
         </a>
+        <a
+          href="#myborrows"
+          className={activeTab === "myborrows" ? "active-nav" : ""}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab("myborrows");
+          }}
+        >
+          My Borrows
+        </a>
       </nav>
 
       <div className="header-actions">
@@ -137,10 +147,10 @@ export default function Navbar({
                   className="dropdown-item"
                   onClick={() => {
                     setProfileDropdown(false);
-                    onOpenNotifications();
+                    setActiveTab("myborrows");
                   }}
                 >
-                  📦 My Borrow Requests
+                  📦 My Borrows & Lent Items
                 </button>
                 <a
                   href="mailto:mallapurlaxman2@gmail.com?subject=Paid%20Web%20%2F%20App%20Development%20Inquiry%20-%20Laxman%20S%20M"
