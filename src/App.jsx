@@ -770,8 +770,8 @@ function App() {
 
             <div className="hero-photo-card hero-photo-main">
               <img
-                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=900&q=85"
-                alt="Borrow and share items with community"
+                src="/hero-share.jpg"
+                alt="LifeLink - Borrow and share nearby items in 3D glassmorphism"
                 onError={(e) => {
                   e.currentTarget.src = FALLBACK_IMAGE;
                 }}
