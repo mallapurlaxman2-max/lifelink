@@ -44,6 +44,16 @@ export default function Navbar({
           Marketplace
         </a>
         <a
+          href="#rentals"
+          className={activeTab === "rentals" ? "active-nav" : ""}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab("rentals");
+          }}
+        >
+          Paid Rentals
+        </a>
+        <a
           href="#urgent"
           className={activeTab === "urgent" ? "active-nav" : ""}
           onClick={(e) => {

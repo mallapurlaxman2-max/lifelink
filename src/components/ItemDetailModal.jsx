@@ -14,7 +14,13 @@ export default function ItemDetailModal({
   if (!item) return null;
 
   const isOwner = user && (item.owner_id === user.id || item.owner === user.user_metadata?.full_name);
-  const isBorrow = item.type === "Borrow" || item.type === "borrow";
+  const isPaid =
+    item.type === "Rent" ||
+    item.type === "rent" ||
+    item.price?.includes("₹") ||
+    item.price?.toLowerCase().includes("day") ||
+    item.price?.toLowerCase().includes("rent");
+  const isBorrow = (item.type === "Borrow" || item.type === "borrow") && !isPaid;
 
   return (
     <div
@@ -41,8 +47,11 @@ export default function ItemDetailModal({
 
           <div className="detail-info">
             <div className="detail-tags">
-              <span className={`pill-badge ${isBorrow ? "borrow-badge" : "donate-badge"}`}>
-                {isBorrow ? "Available to Borrow" : "Free Community Donation"}
+              <span
+                className={`pill-badge ${isPaid ? "rent-badge" : isBorrow ? "borrow-badge" : "donate-badge"}`}
+                style={isPaid ? { background: "#ecfdf5", color: "#065f46", border: "1px solid #10b981", fontWeight: 700 } : {}}
+              >
+                {isPaid ? "💰 Paid Rental / Lend for Pay" : isBorrow ? "Available to Borrow" : "Free Community Donation"}
               </span>
               <span className="pill-badge category-badge">
                 {(item.category || "General").toUpperCase()}
@@ -76,8 +85,17 @@ export default function ItemDetailModal({
                 </span>
               </div>
               <div className="spec-row">
-                <span className="spec-label">Cost</span>
-                <span className="spec-val free-val">{item.price || "100% Free"}</span>
+                <span className="spec-label">Cost / Rental Fee</span>
+                <span
+                  className="spec-val"
+                  style={{
+                    color: isPaid ? "#059669" : "#0d9488",
+                    fontWeight: isPaid ? 800 : 700,
+                    fontSize: isPaid ? "1.05rem" : "1rem"
+                  }}
+                >
+                  {isPaid ? `💰 ${item.price}` : item.price || "100% Free"}
+                </span>
               </div>
             </div>
 
@@ -110,7 +128,7 @@ export default function ItemDetailModal({
                   className="button button-accent full-width submit-btn"
                   onClick={() => onRequest(item)}
                 >
-                  {isBorrow ? "Request to Borrow" : "Request Donation"} ↗
+                  {isPaid ? "💳 Request Paid Rental" : isBorrow ? "Request to Borrow" : "Request Donation"} ↗
                 </button>
               )}
             </div>

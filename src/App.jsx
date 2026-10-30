@@ -11,6 +11,7 @@ import NeedItNow from "./components/NeedItNow";
 import BloodNetwork from "./components/BloodNetwork";
 import LostFound from "./components/LostFound";
 import MyBorrows from "./components/MyBorrows";
+import PaidRentals from "./components/PaidRentals";
 import AuthModal from "./components/AuthModal";
 import NotificationsDrawer from "./components/NotificationsDrawer";
 import Footer from "./components/Footer";
@@ -112,10 +113,16 @@ function MainApp() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [requestModalItem, setRequestModalItem] = useState(null);
   const [showAddItem, setShowAddItem] = useState(false);
+  const [addItemInitialType, setAddItemInitialType] = useState("Borrow");
   const [handoverRequest, setHandoverRequest] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  function handleOpenAddItem(initialType = "Borrow") {
+    setAddItemInitialType(initialType);
+    setShowAddItem(true);
+  }
 
   // Toast
   const [toastMessage, setToastMessage] = useState(null);
@@ -291,14 +298,14 @@ function MainApp() {
           setUnreadCount(0);
         }}
         unreadCount={unreadCount}
-        onOpenAddItem={() => setShowAddItem(true)}
+        onOpenAddItem={() => handleOpenAddItem("Borrow")}
         userLocation={userCoords}
       />
 
       <main>
         {/* Hero Section */}
         <Hero
-          onOpenAddItem={() => setShowAddItem(true)}
+          onOpenAddItem={() => handleOpenAddItem("Borrow")}
           itemsCount={items.length}
           donorsCount={donors.length}
         />
@@ -314,7 +321,17 @@ function MainApp() {
             maxDistance={maxDistance}
             setMaxDistance={setMaxDistance}
             onSelectItem={(item) => setSelectedItem(item)}
-            onOpenAddItem={() => setShowAddItem(true)}
+            onOpenAddItem={() => handleOpenAddItem("Borrow")}
+            distanceLabel={distanceLabel}
+            userLocation={userCoords}
+          />
+        )}
+
+        {activeTab === "rentals" && (
+          <PaidRentals
+            items={itemsWithDistance}
+            onSelectItem={(item) => setSelectedItem(item)}
+            onOpenAddItem={(type) => handleOpenAddItem(type || "Rent")}
             distanceLabel={distanceLabel}
             userLocation={userCoords}
           />
@@ -385,6 +402,7 @@ function MainApp() {
       {showAddItem && (
         <AddItemModal
           userCoords={userCoords}
+          initialType={addItemInitialType}
           onClose={() => setShowAddItem(false)}
           onSuccess={() => {
             loadAllData();

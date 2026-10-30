@@ -35,10 +35,19 @@ export default function Marketplace({
         if (item.category?.toLowerCase() !== category.toLowerCase()) return false;
       }
 
-      // Type filter (All, Borrow, Donate)
-      if (activeFilter === "Borrow") {
-        if (item.type?.toLowerCase() !== "borrow") return false;
-      } else if (activeFilter === "Donate") {
+      // Type filter (All, Free Borrow, Paid Rentals, Donate)
+      const isPaidItem =
+        item.type === "Rent" ||
+        item.type === "rent" ||
+        item.price?.includes("₹") ||
+        item.price?.toLowerCase().includes("day") ||
+        item.price?.toLowerCase().includes("rent");
+
+      if (activeFilter === "Free Borrow" || activeFilter === "Borrow") {
+        if (item.type?.toLowerCase() !== "borrow" || isPaidItem) return false;
+      } else if (activeFilter === "Paid Rentals" || activeFilter === "Rent") {
+        if (!isPaidItem) return false;
+      } else if (activeFilter === "Donate" || activeFilter === "Donation") {
         if (item.type?.toLowerCase() !== "donation" && item.type?.toLowerCase() !== "donate") {
           return false;
         }
@@ -123,16 +132,27 @@ export default function Marketplace({
       {/* Category Tabs & Sorting */}
       <div className="market-controls">
         <div className="filter-tabs" role="group" aria-label="Filter items">
-          {["All", "Borrow", "Donate"].map((filter) => (
-            <button
-              key={filter}
-              className={activeFilter === filter ? "filter-active" : ""}
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter}
-              {filter === "All" && <span>{items.length}</span>}
-            </button>
-          ))}
+          {["All", "Free Borrow", "Paid Rentals", "Donate"].map((filter) => {
+            const paidCount = items.filter(
+              (it) =>
+                it.type === "Rent" ||
+                it.type === "rent" ||
+                it.price?.includes("₹") ||
+                it.price?.toLowerCase().includes("day")
+            ).length;
+
+            return (
+              <button
+                key={filter}
+                className={activeFilter === filter ? "filter-active" : ""}
+                onClick={() => setActiveFilter(filter)}
+              >
+                {filter === "Paid Rentals" ? "💰 Paid Rentals" : filter}
+                {filter === "All" && <span>{items.length}</span>}
+                {filter === "Paid Rentals" && paidCount > 0 && <span>{paidCount}</span>}
+              </button>
+            );
+          })}
         </div>
 
         <div className="secondary-controls">

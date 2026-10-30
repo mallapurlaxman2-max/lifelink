@@ -3,7 +3,13 @@ import React from "react";
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=800&q=80";
 
 export default function ItemCard({ item, onSelect, distanceLabel, index = 0 }) {
-  const isBorrow = item.type === "Borrow" || item.type === "borrow";
+  const isPaid =
+    item.type === "Rent" ||
+    item.type === "rent" ||
+    item.price?.includes("₹") ||
+    item.price?.toLowerCase().includes("day") ||
+    item.price?.toLowerCase().includes("rent");
+  const isBorrow = (item.type === "Borrow" || item.type === "borrow") && !isPaid;
 
   const contactBadgeText = () => {
     if (item.contact_preference === "whatsapp_only") {
@@ -35,8 +41,11 @@ export default function ItemCard({ item, onSelect, distanceLabel, index = 0 }) {
             event.currentTarget.src = FALLBACK_IMAGE;
           }}
         />
-        <span className={`item-type ${isBorrow ? "borrow" : "donation"}`}>
-          {isBorrow ? "Available to borrow" : "Free donation"}
+        <span
+          className={`item-type ${isPaid ? "rent" : isBorrow ? "borrow" : "donation"}`}
+          style={isPaid ? { background: "#059669", color: "#fff", fontWeight: 700 } : {}}
+        >
+          {isPaid ? `💰 ${item.price || "Paid Rental"}` : isBorrow ? "Available to borrow" : "Free donation"}
         </span>
 
         {item.distance !== undefined && (

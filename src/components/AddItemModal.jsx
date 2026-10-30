@@ -48,13 +48,15 @@ function compressImage(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-export default function AddItemModal({ userCoords, onClose, onSuccess, onNotifyToast }) {
+export default function AddItemModal({ userCoords, initialType = "Borrow", onClose, onSuccess, onNotifyToast }) {
   const { user, profile } = useAuth();
   const fileInputRef = useRef(null);
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Tools");
-  const [type, setType] = useState("Borrow");
+  const [type, setType] = useState(initialType);
+  const [rentalRate, setRentalRate] = useState("150");
+  const [securityDeposit, setSecurityDeposit] = useState("");
   const [description, setDescription] = useState("");
   const [area, setArea] = useState(profile?.area || "Tilakwadi, Belagavi");
   const [image, setImage] = useState("");
@@ -127,7 +129,14 @@ export default function AddItemModal({ userCoords, onClose, onSuccess, onNotifyT
         owner_id: user?.id || null,
         phone: profile?.phone || user?.user_metadata?.phone || "+919876543210",
         email: user?.email || "neighbor@lifelink.local",
-        price: type === "Borrow" ? "Free to borrow" : "Free donation",
+        price:
+          type === "Rent"
+            ? (rentalRate.trim().startsWith("₹") ? rentalRate.trim() : `₹${rentalRate.trim() || "150"}`) +
+              "/day" +
+              (securityDeposit.trim() ? ` (Deposit: ${securityDeposit.trim().startsWith("₹") ? securityDeposit.trim() : `₹${securityDeposit.trim()}`})` : "")
+            : type === "Borrow"
+            ? "Free to borrow"
+            : "Free donation",
         condition: "Good",
         status: "available",
         contact_preference: contactPref,
@@ -278,17 +287,65 @@ export default function AddItemModal({ userCoords, onClose, onSuccess, onNotifyT
             </div>
 
             <div className="form-group flex-1">
-              <label className="form-label">Sharing Type</label>
+              <label className="form-label">Sharing / Lending Type *</label>
               <select
                 className="form-select"
                 value={type}
                 onChange={(e) => setType(e.target.value)}
               >
-                <option value="Borrow">Borrow (Will be returned)</option>
+                <option value="Borrow">Free to Borrow (Will return)</option>
+                <option value="Rent">💰 Paid Rental (Lend for Fee)</option>
                 <option value="Donation">Free Donation (Keep permanently)</option>
               </select>
             </div>
           </div>
+
+          {type === "Rent" && (
+            <div
+              className="form-row"
+              style={{
+                background: "#f0fdf4",
+                border: "1.5px solid #10b981",
+                padding: "16px",
+                borderRadius: "12px",
+                marginBottom: "16px",
+                boxShadow: "0 2px 8px rgba(16, 185, 129, 0.08)"
+              }}
+            >
+              <div className="form-group flex-1">
+                <label className="form-label" style={{ color: "#065f46", fontWeight: 700 }}>
+                  💰 Daily Rental Fee (₹) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="form-input"
+                  placeholder="e.g. 150 or 250/day"
+                  value={rentalRate}
+                  onChange={(e) => setRentalRate(e.target.value)}
+                />
+                <small style={{ color: "#047857", marginTop: "4px", display: "block" }}>
+                  Earn money by renting your unused gear
+                </small>
+              </div>
+
+              <div className="form-group flex-1">
+                <label className="form-label" style={{ color: "#065f46", fontWeight: 700 }}>
+                  Refundable Security Deposit
+                </label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. 500 or Govt ID Proof"
+                  value={securityDeposit}
+                  onChange={(e) => setSecurityDeposit(e.target.value)}
+                />
+                <small style={{ color: "#047857", marginTop: "4px", display: "block" }}>
+                  Optional deposit returned upon handback
+                </small>
+              </div>
+            </div>
+          )}
 
           <div className="form-row">
             <div className="form-group">
