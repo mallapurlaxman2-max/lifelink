@@ -406,11 +406,18 @@ export async function generateHandoverToken(requestId, stage) {
 }
 
 export async function confirmHandover({ token, code }) {
+  const cleanCode = (code || token || "").trim();
   const { data, error } = await supabase.rpc("confirm_handover", {
-    p_token: token || null,
-    p_code: code || null,
+    p_code: cleanCode,
+    p_token: null,
   });
-  if (error) throw error;
+  if (error) {
+    console.error("confirm_handover RPC error:", error);
+    throw error;
+  }
+  if (data && data.success === false) {
+    throw new Error(data.error || "Handover verification failed.");
+  }
   return data;
 }
 

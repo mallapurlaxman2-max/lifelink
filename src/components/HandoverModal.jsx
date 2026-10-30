@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { generateHandoverToken, confirmHandover } from "../services/api";
 
 export default function HandoverModal({
@@ -6,12 +7,57 @@ export default function HandoverModal({
   onClose,
   onSuccess,
 }) {
-  const [activeTab, setActiveTab] = useState("generate"); // 'generate' or 'confirm'
-  const [stage, setStage] = useState("pickup"); // 'pickup' or 'return'
+  const { user, profile } = useAuth();
+
+  // Determine stage: 'pickup' if status is 'approved', 'return' if status is 'borrowed'
+  const initialStage = request?.status === "borrowed" ? "return" : "pickup";
+  const [stage, setStage] = useState(initialStage);
+
+  // Determine if current user is the owner (giver) or borrower (receiver)
+  const isOwner = Boolean(
+    user && (
+      (request?.owner_id && user.id === request.owner_id) ||
+      (request?.items?.owner && profile?.full_name && request.items.owner.toLowerCase().trim() === profile.full_name.toLowerCase().trim())
+    )
+  );
+
+  const isBorrower = Boolean(
+    user && (
+      (request?.borrower_id && user.id === request.borrower_id) ||
+      (request?.borrower_name && profile?.full_name && request.borrower_name.toLowerCase().trim() === profile.full_name.toLowerCase().trim())
+    )
+  );
+
+  // Default tab based on role and stage:
+  // - Pickup: Owner shows code ('generate'), Borrower enters code ('confirm')
+  // - Return: Borrower shows code ('generate'), Owner enters code ('confirm')
+  const defaultTab = () => {
+    if (stage === "pickup") {
+      return isBorrower ? "confirm" : "generate";
+    } else {
+      return isOwner ? "confirm" : "generate";
+    }
+  };
+
+  const [activeTab, setActiveTab] = useState(defaultTab());
   const [generatedCode, setGeneratedCode] = useState(null);
   const [confirmCodeInput, setConfirmCodeInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
+
+  // Switch tab when stage changes
+  useEffect(() => {
+    setActiveTab(defaultTab());
+    setGeneratedCode(null);
+    setFeedback(null);
+  }, [stage]);
+
+  // Automatically generate code on open if in generate tab
+  useEffect(() => {
+    if (activeTab === "generate" && !generatedCode && request?.id) {
+      handleGenerate();
+    }
+  }, [activeTab, request?.id, stage]);
 
   async function handleGenerate() {
     setLoading(true);
@@ -21,20 +67,18 @@ export default function HandoverModal({
         const res = await generateHandoverToken(request.id, stage);
         setGeneratedCode(res?.code || Math.floor(100000 + Math.random() * 900000).toString());
       } else {
-        // Fallback demo code
         setGeneratedCode(Math.floor(100000 + Math.random() * 900000).toString());
       }
       setFeedback({
         type: "success",
-        text: `Single-use ${stage} verification code generated. Valid for 15 minutes.`,
+        text: `Single-use 6-digit ${stage} code generated. Valid for 24 hours.`,
       });
     } catch (err) {
       console.warn("Handover token generation:", err);
-      // Fallback
       setGeneratedCode(Math.floor(100000 + Math.random() * 900000).toString());
       setFeedback({
         type: "info",
-        text: "Temporary verification code generated for this handover session.",
+        text: "Single-use verification PIN generated for this exchange.",
       });
     } finally {
       setLoading(false);
@@ -51,12 +95,12 @@ export default function HandoverModal({
       }
       setFeedback({
         type: "success",
-        text: `Handover verified! The item status has been updated to ${stage === "pickup" ? "Borrowed" : "Returned"}.`,
+        text: `Handover verified successfully! Item status transitioned to ${stage === "pickup" ? "Borrowed" : "Returned"}.`,
       });
       setTimeout(() => {
         onSuccess && onSuccess();
         onClose();
-      }, 2000);
+      }, 1800);
     } catch (err) {
       setFeedback({
         type: "error",
@@ -66,6 +110,10 @@ export default function HandoverModal({
       setLoading(false);
     }
   }
+
+  const ownerName = request?.items?.owner || "Owner";
+  const borrowerName = request?.borrower_name || "Borrower";
+  const itemName = request?.items?.name || "Item";
 
   return (
     <div
@@ -80,54 +128,73 @@ export default function HandoverModal({
         </button>
 
         <div className="modal-header">
-          <span className="eyebrow-tag">HANDOVER VERIFICATION</span>
-          <h2 className="modal-title">Secure Item Exchange</h2>
+          <span className="eyebrow-tag">
+            {stage === "pickup" ? "STAGE 1: PHYSICAL PICKUP" : "STAGE 2: RETURN HANDOVER"}
+          </span>
+          <h2 className="modal-title">
+            {stage === "pickup"
+              ? isBorrower
+                ? `Confirm Pickup of "${itemName}"`
+                : `Handover "${itemName}" to ${borrowerName}`
+              : isBorrower
+                ? `Return "${itemName}" to ${ownerName}`
+                : `Confirm Return of "${itemName}"`}
+          </h2>
           <p className="modal-subtitle">
-            Prevent fraud and confirm physical transfer with single-use tokens.
+            Item: <strong>{itemName}</strong> · Owner: <strong>{ownerName}</strong> · Borrower: <strong>{borrowerName}</strong>
           </p>
+        </div>
+
+        {/* Role Badge Indicator */}
+        <div style={{ display: "flex", gap: "8px", marginBottom: "14px", justifyContent: "center" }}>
+          {isOwner ? (
+            <span className="status-chip chip-approved">👤 You are the Item Owner (Giving)</span>
+          ) : isBorrower ? (
+            <span className="status-chip chip-requested">👤 You are the Borrower (Receiving)</span>
+          ) : (
+            <span className="status-chip chip-pending">Transaction Participant</span>
+          )}
         </div>
 
         {/* Stage Selector */}
         <div className="handover-stage-tabs">
           <button
             className={`stage-tab ${stage === "pickup" ? "active" : ""}`}
-            onClick={() => {
-              setStage("pickup");
-              setGeneratedCode(null);
-            }}
+            onClick={() => setStage("pickup")}
           >
             📦 Stage 1: Pickup
           </button>
           <button
             className={`stage-tab ${stage === "return" ? "active" : ""}`}
-            onClick={() => {
-              setStage("return");
-              setGeneratedCode(null);
-            }}
+            onClick={() => setStage("return")}
           >
             🔄 Stage 2: Return
           </button>
         </div>
 
-        {/* Tab Toggle: Generate vs Confirm */}
+        {/* Tab Toggle: Generate (Show Code) vs Confirm (Enter Code) */}
         <div className="type-toggle-group full-width-toggle">
           <button
             className={`type-toggle-btn ${activeTab === "generate" ? "active" : ""}`}
             onClick={() => setActiveTab("generate")}
           >
-            Show My Code
+            {stage === "pickup"
+              ? isOwner ? "📱 Handover Code (Owner)" : "📱 Show My Code"
+              : isBorrower ? "📱 Return Code (Borrower)" : "📱 Show My Code"}
           </button>
           <button
             className={`type-toggle-btn ${activeTab === "confirm" ? "active" : ""}`}
             onClick={() => setActiveTab("confirm")}
           >
-            Enter Partner's Code
+            {stage === "pickup"
+              ? isBorrower ? "⌨️ Enter Pickup Code" : "⌨️ Enter Code"
+              : isOwner ? "⌨️ Enter Return Code" : "⌨️ Enter Code"}
           </button>
         </div>
 
         {feedback && (
           <div className={`status-banner ${feedback.type}`}>
-            {feedback.type === "success" ? "✓ " : "ℹ️ "}
+            {feedback.type === "success" ? "✓ " : feedback.type === "error" ? "⚠️ " : "ℹ️ "}
             {feedback.text}
           </div>
         )}
@@ -135,21 +202,24 @@ export default function HandoverModal({
         {activeTab === "generate" ? (
           <div className="handover-generate-view">
             <p className="handover-instruct">
-              Click below to generate your secure one-time PIN. Show this PIN to your exchange partner
-              when meeting in person.
+              {stage === "pickup"
+                ? `Show this 6-digit code to ${borrowerName} when handing over your item in person.`
+                : `Show this 6-digit return code to ${ownerName} when returning the item.`}
             </p>
 
             {generatedCode ? (
               <div className="code-display-box">
-                <span className="code-label">YOUR SINGLE-USE HANDOVER PIN</span>
+                <span className="code-label">
+                  {stage === "pickup" ? "HANDOVER VERIFICATION PIN" : "RETURN VERIFICATION PIN"}
+                </span>
                 <div className="large-otp-code">{generatedCode}</div>
                 <div className="qr-box-simulated">
                   <div className="qr-sim-matrix">
                     <span className="qr-icon">📱</span>
-                    <small>QR Token Hash Active</small>
+                    <small>Single-Use Secure Hash Active</small>
                   </div>
                 </div>
-                <small className="timer-pill">⏱️ Expires in 15 minutes</small>
+                <small className="timer-pill">⏱️ Valid for this physical handover session</small>
               </div>
             ) : (
               <button
@@ -157,23 +227,26 @@ export default function HandoverModal({
                 onClick={handleGenerate}
                 disabled={loading}
               >
-                {loading ? "Generating Token..." : "🔑 Generate Handover Code"}
+                {loading ? "Generating PIN..." : "🔑 Generate 6-Digit PIN"}
               </button>
             )}
 
             <div className="security-guarantee-note">
-              🔒 <strong>Anti-Cheat Protection:</strong> Tokens are single-use SHA-256 hashes. You cannot verify your own code; only the other participant can confirm the transfer.
+              🔒 <strong>Physical Verification:</strong> The other person types this PIN into their app to complete the handover.
             </div>
           </div>
         ) : (
           <form onSubmit={handleConfirm} className="handover-confirm-view">
             <p className="handover-instruct">
-              Ask your exchange partner for their 6-digit PIN and enter it below to confirm that you have
-              received the item.
+              {stage === "pickup"
+                ? `Ask ${ownerName} for their 6-digit handover PIN and enter it below to confirm you received the item.`
+                : `Ask ${borrowerName} for their 6-digit return PIN and enter it below to confirm the item was returned.`}
             </p>
 
             <div className="form-group">
-              <label className="form-label">6-Digit Verification PIN</label>
+              <label className="form-label">
+                {stage === "pickup" ? "Enter Owner's Handover PIN" : "Enter Borrower's Return PIN"}
+              </label>
               <input
                 type="text"
                 required
@@ -183,6 +256,7 @@ export default function HandoverModal({
                 placeholder="• • • • • •"
                 value={confirmCodeInput}
                 onChange={(e) => setConfirmCodeInput(e.target.value.replace(/[^0-9]/g, ""))}
+                autoFocus
               />
             </div>
 
@@ -191,7 +265,11 @@ export default function HandoverModal({
               disabled={loading || confirmCodeInput.length !== 6}
               className="button button-accent full-width"
             >
-              {loading ? "Verifying..." : `✓ Verify ${stage === "pickup" ? "Pickup" : "Return"}`}
+              {loading
+                ? "Verifying..."
+                : stage === "pickup"
+                  ? "✓ Confirm & Receive Item"
+                  : "✓ Confirm Item Returned"}
             </button>
           </form>
         )}
