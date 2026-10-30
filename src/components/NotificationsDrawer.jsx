@@ -129,13 +129,13 @@ export default function NotificationsDrawer({
             className={`drawer-tab ${activeTab === "incoming" ? "active" : ""}`}
             onClick={() => setActiveTab("incoming")}
           >
-            Incoming ({incoming.length})
+            Lent by Me ({incoming.length})
           </button>
           <button
             className={`drawer-tab ${activeTab === "my_requests" ? "active" : ""}`}
             onClick={() => setActiveTab("my_requests")}
           >
-            My Requests ({myRequests.length})
+            Borrowed by Me ({myRequests.length})
           </button>
           <button
             className={`drawer-tab ${activeTab === "alerts" ? "active" : ""}`}
@@ -184,15 +184,41 @@ export default function NotificationsDrawer({
                         </>
                       )}
                       {req.status === "approved" && (
-                        <button
-                          className="button button-accent btn-small"
-                          onClick={() => {
-                            onClose();
-                            onOpenHandover && onOpenHandover(req);
-                          }}
-                        >
-                          📱 Handover Code
-                        </button>
+                        <div className="active-borrow-notice">
+                          <span className="borrow-badge-status lent">✓ Approved · Ready for Pickup</span>
+                          <p className="return-deadline">Show your 6-digit handover PIN to {req.borrower_name || "the borrower"} when handing over the item.</p>
+                          <button
+                            className="button button-accent btn-small full-width"
+                            onClick={() => {
+                              onClose();
+                              onOpenHandover && onOpenHandover({ ...req, stage: "pickup" });
+                            }}
+                          >
+                            📱 Show Handover PIN (Owner)
+                          </button>
+                        </div>
+                      )}
+                      {req.status === "borrowed" && (
+                        <div className="active-borrow-notice">
+                          <span className="borrow-badge-status lent">🟢 Currently Lent Out</span>
+                          <p className="return-deadline">
+                            Borrower: <strong>{req.borrower_name || "Neighbor"}</strong> · Return by: <strong>{req.return_date || req.requested_dates || "On schedule"}</strong>
+                          </p>
+                          <button
+                            className="button button-accent btn-small full-width"
+                            onClick={() => {
+                              onClose();
+                              onOpenHandover && onOpenHandover({ ...req, stage: "return" });
+                            }}
+                          >
+                            📥 Take Back Item (Enter Return PIN)
+                          </button>
+                        </div>
+                      )}
+                      {req.status === "returned" && (
+                        <div className="active-borrow-notice">
+                          <span className="borrow-badge-status chip-returned">✓ Successfully Returned & Back on Shelf</span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -217,19 +243,51 @@ export default function NotificationsDrawer({
                     <p className="request-dates">📅 Duration: {req.requested_dates || (req.start_date && req.return_date ? `${req.start_date} to ${req.return_date}` : "Flexible")}</p>
                     {(req.borrower_note || req.note) && <p className="request-note">"{req.borrower_note || req.note}"</p>}
 
-                    {req.status === "approved" && (
-                      <div className="request-actions">
-                        <button
-                          className="button button-accent btn-small"
-                          onClick={() => {
-                            onClose();
-                            onOpenHandover && onOpenHandover(req);
-                          }}
-                        >
-                          📱 Confirm Pickup Code
-                        </button>
-                      </div>
-                    )}
+                    <div className="request-actions">
+                      {req.status === "pending" && (
+                        <div className="active-borrow-notice">
+                          <span className="borrow-badge-status pending">⏳ Awaiting Owner Approval</span>
+                          <p className="return-deadline">We'll alert you as soon as {req.items?.owner || "owner"} approves your request.</p>
+                        </div>
+                      )}
+                      {req.status === "approved" && (
+                        <div className="active-borrow-notice">
+                          <span className="borrow-badge-status approved">🎉 Request Approved!</span>
+                          <p className="return-deadline">Meet {req.items?.owner || "owner"} and enter their 6-digit PIN to confirm pickup.</p>
+                          <button
+                            className="button button-accent btn-small full-width"
+                            onClick={() => {
+                              onClose();
+                              onOpenHandover && onOpenHandover({ ...req, stage: "pickup" });
+                            }}
+                          >
+                            📱 Confirm Pickup (Enter PIN)
+                          </button>
+                        </div>
+                      )}
+                      {req.status === "borrowed" && (
+                        <div className="active-borrow-notice">
+                          <span className="borrow-badge-status borrowed">📦 In Your Possession (Active Borrow)</span>
+                          <p className="return-deadline">
+                            Owner: <strong>{req.items?.owner || "Neighbor"}</strong> · Return by: <strong>{req.return_date || req.requested_dates || "On schedule"}</strong>
+                          </p>
+                          <button
+                            className="button button-accent btn-small full-width"
+                            onClick={() => {
+                              onClose();
+                              onOpenHandover && onOpenHandover({ ...req, stage: "return" });
+                            }}
+                          >
+                            🔄 Return Item (Show Return PIN)
+                          </button>
+                        </div>
+                      )}
+                      {req.status === "returned" && (
+                        <div className="active-borrow-notice">
+                          <span className="borrow-badge-status chip-returned">✓ Returned to {req.items?.owner || "Owner"} · Thank you!</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
