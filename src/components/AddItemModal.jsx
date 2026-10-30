@@ -56,7 +56,7 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
   const [category, setCategory] = useState("Tools");
   const [type, setType] = useState("Borrow");
   const [description, setDescription] = useState("");
-  const [area, setArea] = useState(profile?.area || "Saraswathipuram, Mysuru");
+  const [area, setArea] = useState(profile?.area || "Tilakwadi, Belagavi");
   const [image, setImage] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -159,7 +159,7 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
           <span className="eyebrow-tag">COMMUNITY LISTING</span>
           <h2 className="modal-title">Share an Item with Neighbors</h2>
           <p className="modal-subtitle">
-            Give unused tools, books, or gear a second life in Mysuru.
+            Give unused tools, books, or gear a second life in Belagavi.
           </p>
         </div>
 
@@ -310,7 +310,7 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
                 type="text"
                 required
                 className="form-input"
-                placeholder="e.g. Saraswathipuram, Mysuru"
+                placeholder="e.g. Tilakwadi, Belagavi"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
               />

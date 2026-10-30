@@ -19,7 +19,7 @@ export default function Hero({ onOpenAddItem, itemsCount = 8, donorsCount = 8 })
           </h1>
 
           <p className="hero-description">
-            Find calculators, books, tools, and bicycles near you in Mysuru. When you request an item,
+            Find calculators, books, tools, and bicycles near you in Belagavi. When you request an item,
             the owner gets <strong>instant notifications directly with privacy protection</strong> to arrange pickup.
           </p>
 

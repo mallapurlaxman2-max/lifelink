@@ -52,7 +52,7 @@ export default function ItemCard({ item, onSelect, distanceLabel, index = 0 }) {
         <div className="item-meta">
           <span className="item-badge">{item.category || "General"}</span>
           <span className="item-location-label" title={item.area}>
-            📍 {item.area || "Mysuru"}
+            📍 {item.area || "Belagavi"}
           </span>
         </div>
 

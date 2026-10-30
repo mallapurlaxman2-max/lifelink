@@ -28,11 +28,11 @@ import {
 import { supabase } from "./supabase";
 import "./App.css";
 
-// Default coordinates: Mysuru City Center (KR Circle)
+// Default coordinates: Belagavi City Center (Channamma Circle)
 const DEFAULT_COORDS = {
-  lat: 12.3052,
-  lng: 76.6552,
-  area: "Mysuru Central",
+  lat: 15.8528,
+  lng: 74.5045,
+  area: "Belagavi Central",
 };
 
 // Precise distance calculation (Haversine formula in km)

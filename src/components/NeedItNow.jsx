@@ -11,7 +11,7 @@ export default function NeedItNow({ needs = [], onRefresh, onNotifyToast }) {
   const [category, setCategory] = useState("Medical");
   const [urgency, setUrgency] = useState("urgent");
   const [description, setDescription] = useState("");
-  const [area, setArea] = useState(profile?.area || "Saraswathipuram, Mysuru");
+  const [area, setArea] = useState(profile?.area || "Tilakwadi, Belagavi");
   const [submitting, setSubmitting] = useState(false);
 
   const CATEGORIES = ["all", "Medical", "Tools", "Vehicle", "Home", "Others"];
@@ -202,7 +202,7 @@ export default function NeedItNow({ needs = [], onRefresh, onNotifyToast }) {
                     type="text"
                     required
                     className="form-input"
-                    placeholder="e.g. Saraswathipuram, Mysuru"
+                    placeholder="e.g. Tilakwadi, Belagavi"
                     value={area}
                     onChange={(e) => setArea(e.target.value)}
                   />

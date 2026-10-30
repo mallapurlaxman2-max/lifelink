@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
             id: authUser.id,
             full_name: authUser.user_metadata?.full_name || authUser.email?.split("@")[0] || "Neighbor",
             phone: authUser.user_metadata?.phone || "",
-            area: authUser.user_metadata?.area || "Mysuru",
+            area: authUser.user_metadata?.area || "Belagavi",
             reputation_score: 5.0,
             verified: false,
           });

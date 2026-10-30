@@ -97,7 +97,7 @@ export default function RequestBorrowModal({
           <span className="eyebrow-tag">SECURE BORROW REQUEST</span>
           <h2 className="modal-title">Request "{item.name}"</h2>
           <p className="modal-subtitle">
-            Owner: <strong>{item.owner}</strong> · 📍 {item.area || "Mysuru"}
+            Owner: <strong>{item.owner}</strong> · 📍 {item.area || "Belagavi"}
           </p>
         </div>
 

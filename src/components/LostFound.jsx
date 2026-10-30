@@ -13,7 +13,7 @@ export default function LostFound({ items = [], onRefresh, onNotifyToast }) {
   const [type, setType] = useState("found");
   const [category, setCategory] = useState("Keys");
   const [location, setLocation] = useState("");
-  const [area, setArea] = useState(profile?.area || "Saraswathipuram, Mysuru");
+  const [area, setArea] = useState(profile?.area || "Tilakwadi, Belagavi");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -66,7 +66,7 @@ export default function LostFound({ items = [], onRefresh, onNotifyToast }) {
             <span className="eyebrow-tag">COMMUNITY RECOVERY</span>
             <h2 className="section-heading">Lost & Found Hub</h2>
             <p className="section-subtext">
-              Reconnecting lost possessions with their rightful owners in Mysuru.
+              Reconnecting lost possessions with their rightful owners in Belagavi.
             </p>
           </div>
 
@@ -222,7 +222,7 @@ export default function LostFound({ items = [], onRefresh, onNotifyToast }) {
                       type="text"
                       required
                       className="form-input"
-                      placeholder="e.g. Saraswathipuram, Mysuru"
+                      placeholder="e.g. Tilakwadi, Belagavi"
                       value={area}
                       onChange={(e) => setArea(e.target.value)}
                     />

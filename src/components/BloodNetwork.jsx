@@ -11,7 +11,7 @@ export default function BloodNetwork({ donors = [], onRefresh, onNotifyToast }) 
   // Register form state
   const [name, setName] = useState(profile?.full_name || "");
   const [group, setGroup] = useState("O+");
-  const [area, setArea] = useState(profile?.area || "Mysuru");
+  const [area, setArea] = useState(profile?.area || "Belagavi");
   const [phone, setPhone] = useState(profile?.phone || "");
   const [contactPref, setContactPref] = useState("in_app_only");
   const [submitting, setSubmitting] = useState(false);
@@ -75,7 +75,7 @@ export default function BloodNetwork({ donors = [], onRefresh, onNotifyToast }) 
           </div>
           <h2 className="liquid-title">Emergency Blood Donor Registry</h2>
           <p className="liquid-desc">
-            Direct peer-to-peer blood donation network in Mysuru. Every donor is verified,
+            Direct peer-to-peer blood donation network in Belagavi. Every donor is verified,
             and your personal phone number remains private according to your preference.
           </p>
 
@@ -206,7 +206,7 @@ export default function BloodNetwork({ donors = [], onRefresh, onNotifyToast }) 
                       className="form-input"
                       value={area}
                       onChange={(e) => setArea(e.target.value)}
-                      placeholder="e.g. Kuvempunagar, Mysuru"
+                      placeholder="e.g. Tilakwadi, Belagavi"
                     />
                   </div>
                 </div>

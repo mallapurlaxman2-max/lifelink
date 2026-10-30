@@ -69,13 +69,13 @@ export default function Marketplace({
           </div>
           <h2>Browse shared items</h2>
           <p>
-            {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"} available nearby in Mysuru.
+            {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"} available nearby in Belagavi.
           </p>
         </div>
 
         <div className="location-pill-live">
           <span className="live-badge-dot" />
-          <span>📍 {userLocation?.area || "Mysuru Central"}</span>
+          <span>📍 {userLocation?.area || "Belagavi Central"}</span>
           <small>~3.5 km radius</small>
         </div>
       </div>

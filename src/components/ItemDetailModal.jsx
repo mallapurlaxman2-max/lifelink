@@ -55,7 +55,7 @@ export default function ItemDetailModal({
             <div className="detail-specs-table">
               <div className="spec-row">
                 <span className="spec-label">Pickup Area</span>
-                <span className="spec-val">📍 {item.area || "Mysuru"}</span>
+                <span className="spec-val">📍 {item.area || "Belagavi"}</span>
               </div>
               {item.distance !== undefined && (
                 <div className="spec-row">

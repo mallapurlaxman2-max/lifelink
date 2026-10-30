@@ -9,7 +9,7 @@ export default function AuthModal({ onClose, onSuccess }) {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [area, setArea] = useState("Saraswathipuram, Mysuru");
+  const [area, setArea] = useState("Tilakwadi, Belagavi");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");

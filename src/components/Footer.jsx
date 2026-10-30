@@ -11,10 +11,10 @@ export default function Footer({ onSwitchTab }) {
               <span className="brand-name">LifeLink</span>
             </div>
             <p className="footer-tagline">
-              Good Things, Shared. Built for neighbors to borrow, lend, and save lives in Mysuru.
+              Good Things, Shared. Built for neighbors to borrow, lend, and save lives in Belagavi.
             </p>
             <div className="city-pill">
-              <span>📍 Made with ❤️ in Mysuru, Karnataka</span>
+              <span>📍 Developed with ❤️ in Belagavi, Karnataka</span>
             </div>
           </div>
 
@@ -51,13 +51,13 @@ export default function Footer({ onSwitchTab }) {
                 <strong>Ambulance:</strong> 108 / 112
               </li>
               <li>
-                <strong>JSS Hospital Blood Bank:</strong> 0821-2335555
+                <strong>Belagavi District Hospital:</strong> 0831-2404100
               </li>
               <li>
-                <strong>K.R. Hospital Blood Bank:</strong> 0821-2529702
+                <strong>KLE Hospital Blood Bank:</strong> 0831-2470732
               </li>
               <li>
-                <strong>Red Cross Mysuru:</strong> 0821-2566677
+                <strong>Red Cross Belagavi:</strong> 0831-2422000
               </li>
             </ul>
           </div>
