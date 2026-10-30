@@ -113,6 +113,7 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
       const finalImage = image || imagePreview || SAMPLE_IMAGES[0];
 
       const newItem = {
+        id: Date.now(),
         name: name.trim(),
         category,
         type,

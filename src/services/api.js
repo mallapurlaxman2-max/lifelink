@@ -261,6 +261,8 @@ export async function createBorrowRequest({
   startDate,
   endDate,
   note,
+  requestedDates,
+  borrowerNote,
 }) {
   const user = (await supabase.auth.getUser()).data?.user;
   const name = borrowerName || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Neighbor";
@@ -271,6 +273,8 @@ export async function createBorrowRequest({
   const sDate = startDate || today;
   const in3Days = new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0];
   const eDate = endDate || in3Days;
+  const finalNote = (note || borrowerNote || "").trim();
+  const reqDates = requestedDates || `${sDate} to ${eDate}`;
 
   // Execute secure RPC function
   const { data, error } = await supabase.rpc("create_borrow_request", {
@@ -280,7 +284,7 @@ export async function createBorrowRequest({
     p_borrower_email: email.trim(),
     p_start_date: sDate,
     p_return_date: eDate,
-    p_note: (note || "").trim(),
+    p_note: finalNote,
   });
 
   if (error) {
@@ -297,7 +301,9 @@ export async function createBorrowRequest({
           borrower_email: email.trim(),
           start_date: sDate,
           return_date: eDate,
-          note: (note || "").trim(),
+          note: finalNote,
+          borrower_note: finalNote,
+          requested_dates: reqDates,
           status: "pending",
         },
       ])

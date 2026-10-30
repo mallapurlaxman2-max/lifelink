@@ -122,8 +122,9 @@ export default function NotificationsDrawer({
                       <strong>{req.items?.name || "Item"}</strong>
                       <span className={`status-chip chip-${req.status}`}>{req.status}</span>
                     </div>
-                    <p className="request-dates">📅 Dates: {req.requested_dates}</p>
-                    {req.borrower_note && <p className="request-note">"{req.borrower_note}"</p>}
+                    {req.borrower_name && <p className="request-dates">👤 Requested by: <strong>{req.borrower_name}</strong></p>}
+                    <p className="request-dates">📅 Dates: {req.requested_dates || (req.start_date && req.return_date ? `${req.start_date} to ${req.return_date}` : "Flexible")}</p>
+                    {(req.borrower_note || req.note) && <p className="request-note">"{req.borrower_note || req.note}"</p>}
 
                     <div className="request-actions">
                       {req.status === "pending" && (
@@ -173,7 +174,8 @@ export default function NotificationsDrawer({
                       <span className={`status-chip chip-${req.status}`}>{req.status}</span>
                     </div>
                     <p className="request-dates">Owner: {req.items?.owner || "Neighbor"}</p>
-                    <p className="request-dates">📅 Duration: {req.requested_dates}</p>
+                    <p className="request-dates">📅 Duration: {req.requested_dates || (req.start_date && req.return_date ? `${req.start_date} to ${req.return_date}` : "Flexible")}</p>
+                    {(req.borrower_note || req.note) && <p className="request-note">"{req.borrower_note || req.note}"</p>}
 
                     {req.status === "approved" && (
                       <div className="request-actions">
