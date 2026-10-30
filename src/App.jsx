@@ -164,35 +164,10 @@ function cleanPhoneNumber(phone) {
 }
 
 function App() {
-  // Persistence with localStorage
-  const [items, setItems] = useState(() => {
-    try {
-      const saved = localStorage.getItem("lifelink_items");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed.map((item, idx) => ({
-          ...item,
-          area: item.area || STARTER_ITEMS[idx]?.area || "Saraswathipuram, Mysuru",
-          phone: item.phone || STARTER_ITEMS[idx]?.phone || "+919876543210",
-          email: item.email || STARTER_ITEMS[idx]?.email || "owner@lifelink.local",
-          lat: item.lat ?? STARTER_ITEMS[idx]?.lat ?? 12.302,
-          lng: item.lng ?? STARTER_ITEMS[idx]?.lng ?? 76.635,
-        }));
-      }
-      return STARTER_ITEMS;
-    } catch {
-      return STARTER_ITEMS;
-    }
-  });
-
-  const [donors, setDonors] = useState(() => {
-    try {
-      const saved = localStorage.getItem("lifelink_donors");
-      return saved ? JSON.parse(saved) : STARTER_DONORS;
-    } catch {
-      return STARTER_DONORS;
-    }
-  });
+  // Always start with STARTER_ITEMS; Supabase cloud will override immediately
+  const [items, setItems] = useState(STARTER_ITEMS);
+  const [donors, setDonors] = useState(STARTER_DONORS);
+  const [cloudLoaded, setCloudLoaded] = useState(false);
 
   // User browsing location state
   const [userLocation, setUserLocation] = useState(() => {
@@ -234,6 +209,7 @@ function App() {
   // New Item State with both phone and email
   const [newItem, setNewItem] = useState({
     name: "",
+    owner: "",
     category: "Study",
     type: "Borrow",
     description: "",
@@ -256,32 +232,7 @@ function App() {
     email: "",
   });
 
-  // Save changes to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem("lifelink_items", JSON.stringify(items));
-    } catch (e) {
-      console.warn("Storage quota exceeded", e);
-    }
-  }, [items]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("lifelink_donors", JSON.stringify(donors));
-    } catch (e) {
-      console.warn("Storage quota exceeded", e);
-    }
-  }, [donors]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("lifelink_user_location", JSON.stringify(userLocation));
-    } catch (e) {
-      console.warn("Storage quota exceeded", e);
-    }
-  }, [userLocation]);
-
-  // LIVE CLOUD SYNC: Fetch public items & real-time updates from Supabase
+  // LIVE CLOUD SYNC: Always load ALL items from Supabase (so every phone sees the same items)
   useEffect(() => {
     let isMounted = true;
 
@@ -292,16 +243,16 @@ function App() {
           .select("*")
           .order("id", { ascending: false });
 
-        if (!itemsError && cloudItems && cloudItems.length > 0 && isMounted) {
-          setItems((localItems) => {
-            // Merge cloud items with starter items uniquely
-            const ids = new Set(cloudItems.map((i) => i.id));
-            const merged = [...cloudItems, ...localItems.filter((i) => !ids.has(i.id))];
-            return merged;
-          });
+        if (!itemsError && cloudItems && isMounted) {
+          // ALWAYS replace with cloud data — this is the single source of truth
+          if (cloudItems.length > 0) {
+            setItems(cloudItems);
+          }
+          setCloudLoaded(true);
         }
       } catch (err) {
-        console.warn("Could not load cloud items, using local:", err);
+        console.warn("Could not load cloud items:", err);
+        setCloudLoaded(true);
       }
 
       try {
@@ -310,11 +261,11 @@ function App() {
           .select("*")
           .order("id", { ascending: false });
 
-        if (!donorsError && cloudDonors && cloudDonors.length > 0 && isMounted) {
-          setDonors((localDonors) => {
-            const ids = new Set(cloudDonors.map((d) => d.id));
-            return [...cloudDonors, ...localDonors.filter((d) => !ids.has(d.id))];
-          });
+        if (!donorsError && cloudDonors && isMounted) {
+          // Always replace donors with cloud data
+          if (cloudDonors.length > 0) {
+            setDonors(cloudDonors);
+          }
         }
       } catch (err) {
         console.warn("Could not load cloud donors, using local:", err);
@@ -594,7 +545,7 @@ function App() {
       id: Date.now(),
       name: newItem.name.trim(),
       description: newItem.description.trim() || "Shared with the local community.",
-      owner: "You",
+      owner: newItem.owner.trim() || "Community Member",
       price: newItem.type === "Borrow" ? "Free to borrow" : "Free to keep",
       area: newItem.area.trim(),
       phone: newItem.phone.trim() || "+919876543210",
@@ -627,6 +578,7 @@ function App() {
     setShowAddModal(false);
     setNewItem({
       name: "",
+      owner: "",
       category: "Study",
       type: "Borrow",
       description: "",
@@ -1339,6 +1291,18 @@ function App() {
             </div>
 
             <form className="add-item-form" onSubmit={addItem}>
+              <label>
+                Your Name *
+                <input
+                  required
+                  value={newItem.owner}
+                  onChange={(event) =>
+                    setNewItem({ ...newItem, owner: event.target.value })
+                  }
+                  placeholder="e.g. Rahul, Priya, Kiran..."
+                />
+              </label>
+
               <label>
                 Item name *
                 <input
