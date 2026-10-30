@@ -14,7 +14,7 @@ export default function NotificationsDrawer({
   onClose,
   onOpenHandover,
 }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [activeTab, setActiveTab] = useState("incoming"); // 'incoming', 'my_requests', 'alerts'
   const [incoming, setIncoming] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
@@ -31,7 +31,7 @@ export default function NotificationsDrawer({
     setLoading(true);
     try {
       const [inc, myReq, ntf] = await Promise.all([
-        getOwnerIncomingRequests(user.id),
+        getOwnerIncomingRequests(user.id, profile?.full_name),
         getUserRequests(user.id),
         getNotifications(user.id),
       ]);

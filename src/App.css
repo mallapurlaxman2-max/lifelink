@@ -4047,3 +4047,73 @@ main,
   color: #64748b;
   font-size: 0.82rem;
 }
+
+
+/* Gallery / Device Photo Upload Styles */
+.photo-upload-dropzone {
+  border: 2px dashed #93c5fd;
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.photo-upload-dropzone:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  transform: translateY(-2px);
+}
+.upload-camera-icon {
+  font-size: 2.4rem;
+  display: block;
+}
+.photo-upload-dropzone strong {
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+.photo-upload-dropzone small {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.upload-btn-pill {
+  margin-top: 6px;
+  padding: 8px 18px;
+  font-size: 0.85rem;
+}
+.photo-preview-wrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+}
+.photo-preview-img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  display: block;
+}
+.photo-preview-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+}
+.photo-alt-toggle {
+  margin-top: 8px;
+  text-align: right;
+}
+.sample-url-drawer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

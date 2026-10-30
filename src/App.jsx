@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Marketplace from "./components/Marketplace";
@@ -18,6 +18,8 @@ import {
   getDonors,
   getUrgentNeeds,
   getLostFound,
+  getOwnerIncomingRequests,
+  getNotifications,
 } from "./services/api";
 import { supabase } from "./supabase";
 import "./App.css";
@@ -46,6 +48,8 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 function MainApp() {
+  const { user, profile } = useAuth();
+
   // Navigation
   const [activeTab, setActiveTab] = useState("marketplace");
 
@@ -70,6 +74,7 @@ function MainApp() {
   const [handoverRequest, setHandoverRequest] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Toast
   const [toastMessage, setToastMessage] = useState(null);
@@ -77,6 +82,25 @@ function MainApp() {
   function showToast(msg) {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  }
+
+  // Check unread incoming requests and notifications
+  async function checkUnreadCount() {
+    if (!user?.id) {
+      setUnreadCount(0);
+      return;
+    }
+    try {
+      const [inc, notifs] = await Promise.all([
+        getOwnerIncomingRequests(user.id, profile?.full_name),
+        getNotifications(user.id),
+      ]);
+      const pendingInc = (inc || []).filter((r) => r.status === "pending").length;
+      const unreadNotifs = (notifs || []).filter((n) => !n.is_read).length;
+      setUnreadCount(pendingInc + unreadNotifs);
+    } catch (e) {
+      console.warn("Unread count note:", e);
+    }
   }
 
   // Detect GPS Location gracefully
@@ -149,6 +173,51 @@ function MainApp() {
     };
   }, [userCoords]);
 
+  // Real-time Notification & Request Subscriptions for logged-in user
+  useEffect(() => {
+    if (!user?.id) {
+      setUnreadCount(0);
+      return;
+    }
+
+    checkUnreadCount();
+
+    const userChannel = supabase
+      .channel(`user-sync-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "requests" },
+        (payload) => {
+          if (payload.new?.owner_id === user.id) {
+            showToast(`🔔 New borrow request received for your item!`);
+            checkUnreadCount();
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications" },
+        (payload) => {
+          if (payload.new?.user_id === user.id) {
+            showToast(`🔔 ${payload.new.title}: ${payload.new.message}`);
+            checkUnreadCount();
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "requests" },
+        () => {
+          checkUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(userChannel);
+    };
+  }, [user?.id, profile?.full_name]);
+
   const distanceLabel = (dist) => {
     if (dist === null || dist === undefined) return "Nearby";
     if (dist < 1) return `${Math.round(dist * 1000)} m away`;
@@ -165,7 +234,11 @@ function MainApp() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenAuth={() => setShowAuthModal(true)}
-        onOpenNotifications={() => setShowNotifications(true)}
+        onOpenNotifications={() => {
+          setShowNotifications(true);
+          setUnreadCount(0);
+        }}
+        unreadCount={unreadCount}
         onOpenAddItem={() => setShowAddItem(true)}
         userLocation={userCoords}
       />

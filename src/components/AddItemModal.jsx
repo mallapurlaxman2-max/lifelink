@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { createItem } from "../services/api";
+import { supabase } from "../supabase";
 
 const SAMPLE_IMAGES = [
   "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=800&q=80",
@@ -10,29 +11,114 @@ const SAMPLE_IMAGES = [
   "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80",
 ];
 
+// Helper to compress an image file client-side using canvas
+function compressImage(file, maxWidth = 1200, quality = 0.85) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxWidth) {
+            width = Math.round((width * maxWidth) / height);
+            height = maxWidth;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = () => resolve(event.target.result);
+    };
+    reader.onerror = () => resolve(null);
+  });
+}
+
 export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
   const { user, profile } = useAuth();
+  const fileInputRef = useRef(null);
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Tools");
   const [type, setType] = useState("Borrow");
   const [description, setDescription] = useState("");
   const [area, setArea] = useState(profile?.area || "Saraswathipuram, Mysuru");
-  const [image, setImage] = useState(SAMPLE_IMAGES[0]);
+  const [image, setImage] = useState("");
+  const [imagePreview, setImagePreview] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [contactPref, setContactPref] = useState("in_app_only");
   const [submitting, setSubmitting] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+
+  // Handle direct gallery / device storage image upload
+  async function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      // 1. Compress image client-side to fast web-ready data URL
+      const compressedDataUrl = await compressImage(file, 1200, 0.85);
+      if (compressedDataUrl) {
+        setImagePreview(compressedDataUrl);
+        setImage(compressedDataUrl); // Default fallback to compressed data URL
+      }
+
+      // 2. Attempt upload to Supabase storage 'item-images' bucket
+      const fileExt = file.name.split(".").pop() || "jpg";
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `items/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("item-images")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (!uploadError && uploadData) {
+        const { data: publicUrlData } = supabase.storage
+          .from("item-images")
+          .getPublicUrl(filePath);
+
+        if (publicUrlData?.publicUrl) {
+          setImage(publicUrlData.publicUrl);
+        }
+      }
+    } catch (err) {
+      console.warn("Storage upload note (using local preview):", err);
+    } finally {
+      setUploadingImage(false);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const finalImage = image || imagePreview || SAMPLE_IMAGES[0];
+
       const newItem = {
         name: name.trim(),
         category,
         type,
         description: description.trim(),
         area: area.trim(),
-        image: image || SAMPLE_IMAGES[0],
+        image: finalImage,
         owner: profile?.full_name || user?.user_metadata?.full_name || "Neighbor",
         owner_id: user?.id || null,
         phone: profile?.phone || user?.user_metadata?.phone || "+919876543210",
@@ -76,6 +162,104 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
         </div>
 
         <form onSubmit={handleSubmit} className="add-form">
+          {/* Gallery / Camera Photo Upload Box */}
+          <div className="form-group photo-upload-group">
+            <label className="form-label">Item Photo *</label>
+
+            {imagePreview || image ? (
+              <div className="photo-preview-wrap">
+                <img
+                  src={imagePreview || image}
+                  alt="Item preview"
+                  className="photo-preview-img"
+                />
+                <div className="photo-preview-actions">
+                  <button
+                    type="button"
+                    className="button button-light btn-small"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                  >
+                    {uploadingImage ? "Processing..." : "📸 Change Photo"}
+                  </button>
+                  <button
+                    type="button"
+                    className="button button-light btn-small text-danger"
+                    onClick={() => {
+                      setImagePreview("");
+                      setImage("");
+                    }}
+                  >
+                    ✕ Remove
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                className="photo-upload-dropzone"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <span className="upload-camera-icon">📸</span>
+                <strong>Choose Photo from Gallery / Device Storage</strong>
+                <small>Tap to choose from camera, gallery, or local files</small>
+                <button
+                  type="button"
+                  className="button button-dark btn-small upload-btn-pill"
+                >
+                  {uploadingImage ? "Processing..." : "+ Choose from Gallery"}
+                </button>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+
+            <div className="photo-alt-toggle">
+              <button
+                type="button"
+                className="text-action-link"
+                onClick={() => setShowUrlInput(!showUrlInput)}
+              >
+                {showUrlInput ? "Hide URL & sample options" : "Or paste image URL / pick sample"}
+              </button>
+            </div>
+
+            {showUrlInput && (
+              <div className="sample-url-drawer">
+                <input
+                  type="url"
+                  className="form-input"
+                  value={image}
+                  onChange={(e) => {
+                    setImage(e.target.value);
+                    setImagePreview(e.target.value);
+                  }}
+                  placeholder="Paste direct image link https://..."
+                />
+                <div className="sample-thumbnails">
+                  {SAMPLE_IMAGES.map((imgUrl, i) => (
+                    <button
+                      type="button"
+                      key={i}
+                      className={`thumb-btn ${image === imgUrl ? "selected" : ""}`}
+                      onClick={() => {
+                        setImage(imgUrl);
+                        setImagePreview(imgUrl);
+                      }}
+                    >
+                      <img src={imgUrl} alt={`Sample ${i}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="form-row">
             <div className="form-group flex-2">
               <label className="form-label">Item Title *</label>
@@ -143,29 +327,6 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Image URL</label>
-            <input
-              type="url"
-              className="form-input"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              placeholder="Paste image URL or choose below"
-            />
-            <div className="sample-thumbnails">
-              {SAMPLE_IMAGES.map((imgUrl, i) => (
-                <button
-                  type="button"
-                  key={i}
-                  className={`thumb-btn ${image === imgUrl ? "selected" : ""}`}
-                  onClick={() => setImage(imgUrl)}
-                >
-                  <img src={imgUrl} alt={`Sample ${i}`} />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="form-group">
             <label className="form-label">Privacy & Contact Sharing Preference *</label>
             <select
               className="form-select"
@@ -186,7 +347,7 @@ export default function AddItemModal({ onClose, onSuccess, onNotifyToast }) {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || uploadingImage}
             className="button button-accent full-width"
           >
             {submitting ? "Publishing Listing..." : "Publish Item to Community Shelf"}

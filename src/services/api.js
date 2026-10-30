@@ -330,7 +330,7 @@ export async function getUserRequests(userId) {
   return data || [];
 }
 
-export async function getOwnerIncomingRequests(userId) {
+export async function getOwnerIncomingRequests(userId, ownerName = null) {
   if (!userId) return [];
   const { data, error } = await supabase
     .from("requests")
@@ -338,10 +338,17 @@ export async function getOwnerIncomingRequests(userId) {
     .eq("owner_id", userId)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.warn("Could not fetch incoming requests:", error.message);
-    return [];
+  if (!error && data && data.length > 0) return data;
+
+  if (ownerName) {
+    const { data: byName } = await supabase
+      .from("requests")
+      .select("*, items!inner(name, image, area, owner)")
+      .ilike("items.owner", `%${ownerName}%`)
+      .order("created_at", { ascending: false });
+    if (byName && byName.length > 0) return byName;
   }
+
   return data || [];
 }
 
