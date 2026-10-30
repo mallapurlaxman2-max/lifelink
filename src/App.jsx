@@ -15,6 +15,7 @@ import PaidRentals from "./components/PaidRentals";
 import AuthModal from "./components/AuthModal";
 import NotificationsDrawer from "./components/NotificationsDrawer";
 import Footer from "./components/Footer";
+import FloatingFounderBadge from "./components/FloatingFounderBadge";
 import {
   getItems,
   getDonors,
@@ -458,6 +459,9 @@ function MainApp() {
         setActiveTab(tab);
         window.scrollTo({ top: 500, behavior: "smooth" });
       }} />
+
+      {/* Floating Founder & Dev Badge */}
+      <FloatingFounderBadge />
     </div>
   );
 }

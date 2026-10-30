@@ -96,22 +96,6 @@ export default function Navbar({
       </nav>
 
       <div className="header-actions">
-        <a
-          href="mailto:mallapurlaxman2@gmail.com?subject=Paid%20Web%20%2F%20App%20Development%20Project%20Inquiry%20-%20Laxman%20S%20M"
-          className="nav-founder-pill"
-          title="Hire Laxman S M for Paid Web & Mobile App Development"
-        >
-          <img
-            src="/laxman-sm-logo.png"
-            alt="Laxman S M"
-            className="nav-founder-img"
-          />
-          <span className="nav-founder-text">
-            <strong>Laxman S M</strong>
-            <small>Hire Dev</small>
-          </span>
-        </a>
-
         <button
           className="button button-dark nav-button"
           onClick={onOpenAddItem}
