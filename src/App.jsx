@@ -770,8 +770,8 @@ function App() {
 
             <div className="hero-photo-card hero-photo-main">
               <img
-                src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=85"
-                alt="Community items"
+                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=900&q=85"
+                alt="Borrow and share items with community"
                 onError={(e) => {
                   e.currentTarget.src = FALLBACK_IMAGE;
                 }}
@@ -782,19 +782,6 @@ function App() {
                   <strong>Instant Owner Alert</strong>
                   <small>Direct WhatsApp ping & Email notifications</small>
                 </span>
-              </div>
-            </div>
-
-            {/* Neon Glass Progress Pill widget (from Image 2) */}
-            <div className="neon-glass-pill-widget">
-              <div className="neon-pill-row">
-                <span className="neon-status-dot" />
-                <span className="neon-pill-title">Nearby Sharing</span>
-                <span className="neon-pill-pct">Active 98%</span>
-                <span className="neon-pill-x">✕</span>
-              </div>
-              <div className="neon-pill-bar-track">
-                <div className="neon-pill-bar-fill" />
               </div>
             </div>
 
