@@ -76,6 +76,22 @@ export default function Navbar({
       </nav>
 
       <div className="header-actions">
+        <a
+          href="mailto:mallapurlaxman2@gmail.com?subject=Paid%20Web%20%2F%20App%20Development%20Project%20Inquiry%20-%20Laxman%20S%20M"
+          className="nav-founder-pill"
+          title="Hire Laxman S M for Paid Web & Mobile App Development"
+        >
+          <img
+            src="/laxman-sm-logo.png"
+            alt="Laxman S M"
+            className="nav-founder-img"
+          />
+          <span className="nav-founder-text">
+            <strong>Laxman S M</strong>
+            <small>Hire Dev</small>
+          </span>
+        </a>
+
         <button
           className="button button-dark nav-button"
           onClick={onOpenAddItem}
@@ -126,6 +142,18 @@ export default function Navbar({
                 >
                   📦 My Borrow Requests
                 </button>
+                <a
+                  href="mailto:mallapurlaxman2@gmail.com?subject=Paid%20Web%20%2F%20App%20Development%20Inquiry%20-%20Laxman%20S%20M"
+                  className="dropdown-item"
+                  style={{ display: "flex", alignItems: "center", gap: "8px", color: "#0d9488", textDecoration: "none" }}
+                  onClick={() => setProfileDropdown(false)}
+                >
+                  <img src="/laxman-sm-logo.png" alt="Laxman S M" style={{ width: "22px", height: "22px", borderRadius: "4px" }} />
+                  <div>
+                    <strong style={{ fontSize: "0.85rem" }}>Hire Founder (Laxman S M)</strong>
+                    <small style={{ display: "block", color: "#64748b", fontSize: "0.72rem" }}>Paid Web & App Dev</small>
+                  </div>
+                </a>
                 <button
                   className="dropdown-item text-danger"
                   onClick={() => {

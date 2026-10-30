@@ -74,6 +74,41 @@ export default function Footer({ onSwitchTab }) {
           </div>
         </div>
 
+        {/* Founder & Paid Development Section */}
+        <div className="footer-founder-card">
+          <div className="founder-card-left">
+            <div className="founder-logo-wrap">
+              <img
+                src="/laxman-sm-logo.png"
+                alt="Laxman S M Logo"
+                className="founder-logo-img"
+              />
+            </div>
+            <div className="founder-info">
+              <div className="founder-tag">FOUNDER & LEAD DEVELOPER</div>
+              <h3 className="founder-name">Laxman S M</h3>
+              <p className="founder-role">
+                Full-Stack Web & Mobile App Development Specialist
+              </p>
+              <p className="founder-desc">
+                Looking for high-performance websites, modern web apps, or mobile applications like LifeLink? Available for <strong>paid web development and app development projects</strong>.
+              </p>
+            </div>
+          </div>
+
+          <div className="founder-card-right">
+            <a
+              href="mailto:mallapurlaxman2@gmail.com?subject=Paid%20Web%20%2F%20App%20Development%20Project%20Inquiry%20-%20Laxman%20S%20M"
+              className="founder-contact-btn"
+            >
+              ✉️ mallapurlaxman2@gmail.com
+            </a>
+            <span className="founder-availability">
+              🟢 Available for Paid Web & App Projects
+            </span>
+          </div>
+        </div>
+
         <div className="footer-bottom-row">
           <p>© {new Date().getFullYear()} LifeLink Community Network. All rights reserved.</p>
           <p className="footer-subtext">Designed for high-speed 60–120 FPS mobile & desktop experience.</p>
