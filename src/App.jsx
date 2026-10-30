@@ -156,7 +156,10 @@ function MainApp() {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-shell">
+      <div className="ambient ambient-one" />
+      <div className="ambient ambient-two" />
+
       {/* Global Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -167,20 +170,15 @@ function MainApp() {
         userLocation={userCoords}
       />
 
-      {/* Hero Section */}
-      <Hero
-        search={search}
-        setSearch={setSearch}
-        category={category}
-        setCategory={setCategory}
-        maxDistance={maxDistance}
-        setMaxDistance={setMaxDistance}
-        itemsCount={items.length}
-        donorsCount={donors.length}
-      />
+      <main>
+        {/* Hero Section */}
+        <Hero
+          onOpenAddItem={() => setShowAddItem(true)}
+          itemsCount={items.length}
+          donorsCount={donors.length}
+        />
 
-      {/* Main Tab Content */}
-      <main className="main-content-flow">
+        {/* Main Tab Content */}
         {activeTab === "marketplace" && (
           <Marketplace
             items={items}
@@ -193,6 +191,7 @@ function MainApp() {
             onSelectItem={(item) => setSelectedItem(item)}
             onOpenAddItem={() => setShowAddItem(true)}
             distanceLabel={distanceLabel}
+            userLocation={userCoords}
           />
         )}
 

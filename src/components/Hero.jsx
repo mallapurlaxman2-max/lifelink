@@ -1,123 +1,130 @@
 import React from "react";
 
-export default function Hero({
-  search,
-  setSearch,
-  category,
-  setCategory,
-  maxDistance,
-  setMaxDistance,
-  itemsCount = 8,
-  donorsCount = 8,
-}) {
-  const CATEGORIES = [
-    { label: "All items", icon: "✨" },
-    { label: "Tools", icon: "🔧" },
-    { label: "Study", icon: "📚" },
-    { label: "Home", icon: "🪴" },
-    { label: "Travel", icon: "🎒" },
-    { label: "Others", icon: "🚲" },
-  ];
+const FALLBACK_HERO = "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=900&q=80";
 
+export default function Hero({ onOpenAddItem, itemsCount = 8, donorsCount = 8 }) {
   return (
-    <section className="hero-section" id="home">
-      <div className="hero-content">
-        <div className="hero-badge">
-          <span className="sparkle">🌿</span>
-          <span>Zero-Waste Neighborhood Sharing Network</span>
-        </div>
-
-        <h1 className="hero-title">
-          Borrow what you need. <br />
-          <span className="hero-highlight">Share what you have.</span>
-        </h1>
-
-        <p className="hero-subtitle">
-          Connect with trusted neighbors in Mysuru to borrow tools, textbooks, gear, and daily essentials.
-          Save money, reduce clutter, and build a tighter local community.
-        </p>
-
-        {/* Global Search & Distance Controls */}
-        <div className="hero-search-box">
-          <div className="search-input-wrap">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Search drills, calculators, camping gear, books..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="hero-search-input"
-            />
-            {search && (
-              <button
-                className="clear-search-btn"
-                onClick={() => setSearch("")}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
+    <>
+      <section className="hero section-wrap" id="home">
+        <div className="hero-copy">
+          <div className="eyebrow">
+            <span className="status-dot" />
+            LOCATION & VERIFIED DIRECT NOTIFICATIONS
           </div>
 
-          <div className="distance-selector-wrap">
-            <label htmlFor="distance-select" className="distance-label">
-              📍 Max Radius:
-            </label>
-            <select
-              id="distance-select"
-              value={maxDistance}
-              onChange={(e) => setMaxDistance(e.target.value)}
-              className="distance-select"
-            >
-              <option value="3">Within 3 km</option>
-              <option value="5">Within 5 km</option>
-              <option value="10">Within 10 km</option>
-              <option value="all">Any distance</option>
-            </select>
-          </div>
-        </div>
+          <h1>
+            Borrow & Give
+            <br />
+            from <span>nearby</span> neighbors.
+          </h1>
 
-        {/* Category Filter Chips */}
-        <div className="hero-category-chips">
-          {CATEGORIES.map((cat) => (
+          <p className="hero-description">
+            Find calculators, books, tools, and bicycles near you in Mysuru. When you request an item,
+            the owner gets <strong>instant notifications directly with privacy protection</strong> to arrange pickup.
+          </p>
+
+          <div className="hero-actions">
+            <a href="#marketplace" className="button button-dark">
+              Explore nearby items <span>↘</span>
+            </a>
             <button
-              key={cat.label}
-              className={`category-chip ${
-                (cat.label === "All items" && category === "All categories") ||
-                category.toLowerCase() === cat.label.toLowerCase()
-                  ? "active"
-                  : ""
-              }`}
-              onClick={() =>
-                setCategory(cat.label === "All items" ? "All categories" : cat.label)
-              }
+              className="button button-light"
+              onClick={onOpenAddItem}
             >
-              <span className="chip-icon">{cat.icon}</span>
-              <span>{cat.label}</span>
+              Share an item
             </button>
-          ))}
+          </div>
+
+          <div className="hero-trust">
+            <div className="avatar-stack" aria-hidden="true">
+              <span>R</span>
+              <span>A</span>
+              <span>M</span>
+              <span>+</span>
+            </div>
+            <p>
+              <strong>Zero buying. Direct connection.</strong>
+              <span>Verified in-app notifications and fraud-resistant QR handovers.</span>
+            </p>
+          </div>
         </div>
 
-        {/* Quick Impact Stats */}
-        <div className="hero-stats-row">
-          <div className="hero-stat-card">
-            <strong className="stat-number">{itemsCount}+</strong>
-            <span className="stat-label">Items Available</span>
+        <div className="hero-visual" aria-label="Visual of community items">
+          <div className="hero-orbit orbit-one" />
+          <div className="hero-orbit orbit-two" />
+          <div className="neon-glass-orb orb-cyan" />
+          <div className="neon-glass-orb orb-purple" />
+          <div className="neon-glass-orb orb-blue" />
+          <div className="neon-glass-chip chip-plus">+</div>
+          <div className="neon-glass-chip chip-cross">✕</div>
+
+          <div className="hero-photo-card hero-photo-main">
+            <img
+              src="/hero-share.jpg"
+              alt="LifeLink - Borrow and share nearby items in 3D glassmorphism"
+              onError={(e) => {
+                e.currentTarget.src = FALLBACK_HERO;
+              }}
+            />
+            <div className="photo-caption">
+              <span className="caption-icon">📱</span>
+              <span>
+                <strong>Instant Owner Alert</strong>
+                <small>Direct In-App ping & verified handovers</small>
+              </span>
+            </div>
           </div>
-          <div className="hero-stat-card">
-            <strong className="stat-number">{donorsCount}+</strong>
-            <span className="stat-label">Verified Blood Donors</span>
+
+          <div className="floating-note note-top">
+            <span className="note-icon">💬</span>
+            <span>
+              <strong>Privacy protected</strong>
+              <small>In-app requests by default</small>
+            </span>
           </div>
-          <div className="hero-stat-card">
-            <strong className="stat-number">100%</strong>
-            <span className="stat-label">Free Community Sharing</span>
+          <div className="floating-note note-bottom">
+            <span className="note-icon note-blue">⌖</span>
+            <span>
+              <strong>Sorted by proximity</strong>
+              <small>Closest items first</small>
+            </span>
           </div>
-          <div className="hero-stat-card">
-            <strong className="stat-number">~120 kg</strong>
-            <span className="stat-label">Carbon Offset</span>
+          <div className="hero-spark spark-one">✳</div>
+          <div className="hero-spark spark-two">✳</div>
+        </div>
+      </section>
+
+      {/* Impact strip */}
+      <section className="impact-strip section-wrap" aria-label="LifeLink values">
+        <div className="impact-item">
+          <span className="impact-icon">⌖</span>
+          <div>
+            <strong>Hyperlocal Radius</strong>
+            <small>Sorted from nearest neighbor to door</small>
           </div>
         </div>
-      </div>
-    </section>
+        <div className="impact-item">
+          <span className="impact-icon">🛡️</span>
+          <div>
+            <strong>Shielded Privacy</strong>
+            <small>Contacts hidden from web crawlers</small>
+          </div>
+        </div>
+        <div className="impact-item">
+          <span className="impact-icon">🌱</span>
+          <div>
+            <strong>100% Free Sharing</strong>
+            <small>Zero fees, circular neighborhood economy</small>
+          </div>
+        </div>
+        <div className="impact-item">
+          <span className="impact-icon">⚡</span>
+          <div>
+            <strong>Verified Handovers</strong>
+            <small>Single-use PINs for fraud prevention</small>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

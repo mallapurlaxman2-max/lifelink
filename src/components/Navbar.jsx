@@ -11,151 +11,141 @@ export default function Navbar({
   userLocation,
 }) {
   const { user, profile, signOut } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
 
   return (
-    <header className="site-header">
-      <div className="header-inner">
+    <header className="topbar">
+      <a
+        href="#home"
+        className="brand"
+        aria-label="LifeLink home"
+        onClick={(e) => {
+          e.preventDefault();
+          setActiveTab("marketplace");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      >
+        <span className="brand-symbol">L</span>
+        <span>
+          LifeLink
+          <small>GOOD THINGS, SHARED</small>
+        </span>
+      </a>
+
+      <nav className="main-nav" aria-label="Main navigation">
         <a
-          href="#home"
-          className="brand"
+          href="#marketplace"
+          className={activeTab === "marketplace" ? "active-nav" : ""}
           onClick={(e) => {
             e.preventDefault();
             setActiveTab("marketplace");
-            window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >
-          <div className="brand-icon">🌱</div>
-          <div className="brand-text">
-            <span className="brand-name">LifeLink</span>
-            <span className="brand-sub">Good Things, Shared</span>
-          </div>
+          Marketplace
         </a>
+        <a
+          href="#urgent"
+          className={activeTab === "urgent" ? "active-nav" : ""}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab("urgent");
+          }}
+        >
+          Need It Now
+        </a>
+        <a
+          href="#blood"
+          className={activeTab === "blood" ? "active-nav" : ""}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab("blood");
+          }}
+        >
+          Blood Network
+        </a>
+        <a
+          href="#lostfound"
+          className={activeTab === "lostfound" ? "active-nav" : ""}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab("lostfound");
+          }}
+        >
+          Lost & Found
+        </a>
+      </nav>
 
-        <div className="location-pill" title="Your neighborhood radius">
-          <span className="live-dot" />
-          <span>{userLocation?.area || "Mysuru"}</span>
-          <span className="distance-badge">~3.5 km</span>
-        </div>
+      <div className="header-actions">
+        <button
+          className="button button-dark nav-button"
+          onClick={onOpenAddItem}
+        >
+          <span>＋</span> Share an item
+        </button>
 
-        <nav className={`header-nav ${menuOpen ? "open" : ""}`}>
+        {user && (
           <button
-            className={`nav-link ${activeTab === "marketplace" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("marketplace");
-              setMenuOpen(false);
-            }}
+            className="icon-button notification-bell"
+            onClick={onOpenNotifications}
+            aria-label="Notifications"
           >
-            Marketplace
+            🔔
+            {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
           </button>
-          <button
-            className={`nav-link ${activeTab === "urgent" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("urgent");
-              setMenuOpen(false);
-            }}
-          >
-            Need It Now
-            <span className="pulse-dot" />
-          </button>
-          <button
-            className={`nav-link ${activeTab === "blood" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("blood");
-              setMenuOpen(false);
-            }}
-          >
-            Blood Network
-          </button>
-          <button
-            className={`nav-link ${activeTab === "lostfound" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("lostfound");
-              setMenuOpen(false);
-            }}
-          >
-            Lost & Found
-          </button>
-        </nav>
+        )}
 
-        <div className="header-actions">
-          <button
-            className="button button-accent add-item-btn"
-            onClick={onOpenAddItem}
-          >
-            <span>+</span> Share Item
-          </button>
-
-          {user && (
+        {user ? (
+          <div className="user-profile-menu">
             <button
-              className="icon-button notification-bell"
-              onClick={onOpenNotifications}
-              aria-label="Notifications"
+              className="user-pill"
+              onClick={() => setProfileDropdown(!profileDropdown)}
             >
-              🔔
-              {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+              <span className="user-avatar-small">
+                {(profile?.full_name || user.email || "U").charAt(0).toUpperCase()}
+              </span>
+              <span className="user-name-truncated">
+                {profile?.full_name || user.email?.split("@")[0]}
+              </span>
+              <span className="dropdown-arrow">▾</span>
             </button>
-          )}
 
-          {user ? (
-            <div className="user-profile-menu">
-              <button
-                className="user-pill"
-                onClick={() => setProfileDropdown(!profileDropdown)}
-              >
-                <span className="user-avatar-small">
-                  {(profile?.full_name || user.email || "U").charAt(0).toUpperCase()}
-                </span>
-                <span className="user-name-truncated">
-                  {profile?.full_name || user.email?.split("@")[0]}
-                </span>
-                <span className="dropdown-arrow">▾</span>
-              </button>
-
-              {profileDropdown && (
-                <div className="profile-dropdown-menu">
-                  <div className="dropdown-user-header">
-                    <strong>{profile?.full_name || "Neighbor"}</strong>
-                    <small>{user.email}</small>
-                    <span className="reputation-badge">⭐ {profile?.reputation_score || "5.0"} Community Score</span>
-                  </div>
-                  <hr />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      setProfileDropdown(false);
-                      onOpenNotifications();
-                    }}
-                  >
-                    📦 My Borrow Requests
-                  </button>
-                  <button
-                    className="dropdown-item text-danger"
-                    onClick={() => {
-                      setProfileDropdown(false);
-                      signOut();
-                    }}
-                  >
-                    Sign Out
-                  </button>
+            {profileDropdown && (
+              <div className="profile-dropdown-menu">
+                <div className="dropdown-user-header">
+                  <strong>{profile?.full_name || "Neighbor"}</strong>
+                  <small>{user.email}</small>
+                  <span className="reputation-badge">⭐ {profile?.reputation_score || "5.0"} Score</span>
                 </div>
-              )}
-            </div>
-          ) : (
-            <button className="button button-light sign-in-btn" onClick={onOpenAuth}>
-              Sign In
-            </button>
-          )}
-
+                <hr />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setProfileDropdown(false);
+                    onOpenNotifications();
+                  }}
+                >
+                  📦 My Borrow Requests
+                </button>
+                <button
+                  className="dropdown-item text-danger"
+                  onClick={() => {
+                    setProfileDropdown(false);
+                    signOut();
+                  }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
           <button
-            className="mobile-menu-toggle"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle navigation"
+            className="button button-light nav-button"
+            onClick={onOpenAuth}
           >
-            {menuOpen ? "✕" : "☰"}
+            Sign In
           </button>
-        </div>
+        )}
       </div>
     </header>
   );
