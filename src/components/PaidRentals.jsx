@@ -306,7 +306,7 @@ export default function PaidRentals({
             </button>
           </div>
         ) : (
-          <div className="item-grid">
+          <div className="rentals-grid">
             {sortedRentals.map((item, index) => (
               <ItemCard
                 key={item.id}

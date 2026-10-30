@@ -160,7 +160,7 @@ export default function MyBorrows({
             </button>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 340px))", gap: "24px" }}>
             {myRequests.map((req) => {
               const daysLeft = formatDaysRemaining(req.return_date);
               const isActive = req.status === "borrowed";
@@ -285,7 +285,7 @@ export default function MyBorrows({
             </p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 340px))", gap: "24px" }}>
             {incoming.map((req) => {
               const daysLeft = formatDaysRemaining(req.return_date);
               const isActive = req.status === "borrowed";
