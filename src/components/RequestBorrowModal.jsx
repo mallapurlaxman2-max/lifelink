@@ -9,8 +9,19 @@ export default function RequestBorrowModal({
 }) {
   const { user, profile } = useAuth();
 
+  const isOwner = Boolean(
+    user &&
+    (item.owner_id === user.id ||
+      (item.owner && profile?.full_name && item.owner.toLowerCase().trim() === profile.full_name.toLowerCase().trim()))
+  );
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const defaultReturnStr = new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0];
+
   const [borrowerName, setBorrowerName] = useState(profile?.full_name || "");
-  const [requestedDates, setRequestedDates] = useState("");
+  const [borrowerPhone, setBorrowerPhone] = useState(profile?.phone || "");
+  const [startDate, setStartDate] = useState(todayStr);
+  const [returnDate, setReturnDate] = useState(defaultReturnStr);
   const [borrowerNote, setBorrowerNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
@@ -19,14 +30,26 @@ export default function RequestBorrowModal({
 
   async function handleInAppSubmit(e) {
     e.preventDefault();
+    if (isOwner) {
+      setStatusMessage({
+        type: "error",
+        text: "You cannot borrow your own listed item.",
+      });
+      return;
+    }
+
     setSubmitting(true);
     setStatusMessage(null);
 
     try {
       await createBorrowRequest({
         itemId: item.id,
-        requestedDates: requestedDates || "This week (flexible)",
-        borrowerNote: borrowerNote || `Hi ${item.owner}, I would like to borrow your ${item.name}.`,
+        borrowerName: borrowerName.trim() || profile?.full_name || "Neighbor",
+        borrowerPhone: borrowerPhone.trim() || "+919876543210",
+        borrowerEmail: user?.email || "neighbor@lifelink.local",
+        startDate,
+        endDate: returnDate,
+        note: borrowerNote.trim() || `Hi ${item.owner}, I would like to borrow your ${item.name}.`,
       });
 
       setStatusMessage({
@@ -40,18 +63,10 @@ export default function RequestBorrowModal({
       }, 2000);
     } catch (err) {
       console.error("Borrow request error:", err);
-      // If unauthorized or table needs migration
-      if (err.message?.includes("logged in") || !user) {
-        setStatusMessage({
-          type: "error",
-          text: "Please sign in or use WhatsApp direct alert to contact the owner.",
-        });
-      } else {
-        setStatusMessage({
-          type: "error",
-          text: err.message || "Could not submit request. Please try again.",
-        });
-      }
+      setStatusMessage({
+        type: "error",
+        text: err.message || "Could not submit request. Please try again.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -60,8 +75,7 @@ export default function RequestBorrowModal({
   function handleDirectWhatsApp() {
     const cleanPhone = (item.phone || "919876543210").replace(/[^0-9]/g, "");
     const nameStr = borrowerName.trim() || profile?.full_name || "A neighbor";
-    const dateStr = requestedDates || "as soon as convenient";
-    const msg = `Hello ${item.owner}! 👋\n\nI saw your listing on LifeLink: "${item.name}" in ${item.area}.\n\nI would love to ${item.type?.toLowerCase() || "borrow"} it for ${dateStr}.\nMy name: ${nameStr}\nNote: ${borrowerNote.trim() || "Let me know if it is available."}\n\nThank you!`;
+    const msg = `Hello ${item.owner}! 👋\n\nI saw your listing on LifeLink: "${item.name}" in ${item.area}.\n\nI would love to ${item.type?.toLowerCase() || "borrow"} it from ${startDate} to ${returnDate}.\nMy name: ${nameStr}\nNote: ${borrowerNote.trim() || "Let me know if it is available."}\n\nThank you!`;
     const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank");
     onClose();
@@ -87,6 +101,12 @@ export default function RequestBorrowModal({
           </p>
         </div>
 
+        {isOwner && (
+          <div className="status-banner info">
+            ℹ️ You are listed as the owner of this item. In a live network, other neighbors will borrow from you.
+          </div>
+        )}
+
         {statusMessage && (
           <div className={`status-banner ${statusMessage.type}`}>
             {statusMessage.type === "success" ? "✓ " : "⚠️ "}
@@ -95,31 +115,60 @@ export default function RequestBorrowModal({
         )}
 
         <form onSubmit={handleInAppSubmit} className="request-form">
-          <div className="form-group">
-            <label className="form-label">Your Name</label>
-            <input
-              type="text"
-              required
-              className="form-input"
-              placeholder="e.g. Aditi Sharma"
-              value={borrowerName}
-              onChange={(e) => setBorrowerName(e.target.value)}
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Your Full Name *</label>
+              <input
+                type="text"
+                required
+                className="form-input"
+                placeholder="e.g. Aditi Sharma"
+                value={borrowerName}
+                onChange={(e) => setBorrowerName(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Your Phone Number *</label>
+              <input
+                type="tel"
+                required
+                className="form-input"
+                placeholder="e.g. +91 98765 43210"
+                value={borrowerPhone}
+                onChange={(e) => setBorrowerPhone(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Start / Pickup Date *</label>
+              <input
+                type="date"
+                required
+                min={todayStr}
+                className="form-input"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Planned Return Date *</label>
+              <input
+                type="date"
+                required
+                min={startDate || todayStr}
+                className="form-input"
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Needed Dates / Duration</label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="e.g. This Saturday to Sunday (2 days)"
-              value={requestedDates}
-              onChange={(e) => setRequestedDates(e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Message / Usage Purpose</label>
+            <label className="form-label">Message / Note to {item.owner}</label>
             <textarea
               className="form-textarea"
               rows="3"
@@ -132,10 +181,10 @@ export default function RequestBorrowModal({
           <div className="request-submit-block">
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || isOwner}
               className="button button-accent full-width"
             >
-              {submitting ? "Sending Request..." : "🛡️ Send Secure In-App Request"}
+              {submitting ? "Sending Request..." : isOwner ? "Cannot Borrow Own Item" : "🛡️ Send Secure In-App Request"}
             </button>
 
             {item.contact_preference !== "in_app_only" && (

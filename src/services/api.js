@@ -253,35 +253,66 @@ export async function createDonor(donor) {
 }
 
 // --- SECURE BORROW REQUESTS VIA RPC ---
-export async function createBorrowRequest({ itemId, requestedDates, borrowerNote }) {
-  // First attempt secure RPC function
+export async function createBorrowRequest({
+  itemId,
+  borrowerName,
+  borrowerPhone,
+  borrowerEmail,
+  startDate,
+  endDate,
+  note,
+}) {
+  const user = (await supabase.auth.getUser()).data?.user;
+  const name = borrowerName || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Neighbor";
+  const phone = borrowerPhone || user?.user_metadata?.phone || "+919876543210";
+  const email = borrowerEmail || user?.email || "borrower@lifelink.local";
+
+  const today = new Date().toISOString().split("T")[0];
+  const sDate = startDate || today;
+  const in3Days = new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0];
+  const eDate = endDate || in3Days;
+
+  // Execute secure RPC function
   const { data, error } = await supabase.rpc("create_borrow_request", {
-    p_item_id: itemId,
-    p_requested_dates: requestedDates || "Negotiable with owner",
-    p_borrower_note: borrowerNote || "",
+    p_item_id: parseInt(itemId),
+    p_borrower_name: name.trim(),
+    p_borrower_phone: phone.trim(),
+    p_borrower_email: email.trim(),
+    p_start_date: sDate,
+    p_return_date: eDate,
+    p_note: (note || "").trim(),
   });
 
-  if (!error) return data;
+  if (error) {
+    console.warn("create_borrow_request RPC call error:", error.message);
+    // Fallback direct insert if RPC fails
+    const { data: inserted, error: insertError } = await supabase
+      .from("requests")
+      .insert([
+        {
+          item_id: parseInt(itemId),
+          borrower_id: user?.id || null,
+          borrower_name: name.trim(),
+          borrower_phone: phone.trim(),
+          borrower_email: email.trim(),
+          start_date: sDate,
+          return_date: eDate,
+          note: (note || "").trim(),
+          status: "pending",
+        },
+      ])
+      .select()
+      .single();
 
-  // Graceful fallback if RPC is not yet created in Supabase
-  console.warn("create_borrow_request RPC not found, falling back:", error.message);
-  const user = (await supabase.auth.getUser()).data?.user;
-  const { data: inserted, error: insertError } = await supabase
-    .from("requests")
-    .insert([
-      {
-        item_id: itemId,
-        borrower_id: user?.id,
-        status: "pending",
-        requested_dates: requestedDates,
-        borrower_note: borrowerNote,
-      },
-    ])
-    .select()
-    .single();
+    if (insertError) throw insertError;
+    return inserted;
+  }
 
-  if (insertError) throw insertError;
-  return inserted;
+  if (data && data.success === false) {
+    throw new Error(data.error || "Borrow request was rejected by server rules.");
+  }
+
+  return data;
 }
 
 export async function getUserRequests(userId) {
