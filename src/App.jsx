@@ -1259,6 +1259,10 @@ function App() {
         <a href="#home" className="back-top">
           Back to top ↑
         </a>
+        <div className="developer-credit">
+          <span>🛠️ Developed by <strong>Laxman S M</strong></span>
+          <a href="mailto:mallapurlaxman2@gmail.com">mallapurlaxman2@gmail.com</a>
+        </div>
       </footer>
 
       {/* Share / Add Item Modal with Phone & Email */}

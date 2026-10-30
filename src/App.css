@@ -1776,6 +1776,33 @@ main,
   color: var(--blue);
 }
 
+.developer-credit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 13px;
+  color: #8791a0;
+  border-left: 2px solid #e4e9f1;
+  padding-left: 18px;
+  margin-left: auto;
+}
+
+.developer-credit strong {
+  color: #3a4a63;
+}
+
+.developer-credit a {
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.developer-credit a:hover {
+  text-decoration: underline;
+}
+
 /* Modals */
 
 .modal-backdrop {
